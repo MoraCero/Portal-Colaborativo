@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plataforma de Equipo</title>
+<style>
+  :root{
+    --bg:#f4f5f7;
+    --panel:#ffffff;
+    --border:#e2e4e9;
+    --text:#1f2430;
+    --text-muted:#6b7280;
+    --accent:#4f46e5;
+    --accent-light:#eef0ff;
+    --green:#16a34a;
+    --yellow:#d97706;
+    --red:#dc2626;
+    --radius:10px;
+    --shadow:0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+  /* Sidebar */
+  .sidebar{
+    width:230px;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    padding:20px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    position:sticky;
+    top:0;
+    height:100vh;
+  }
+  .brand{
+    font-weight:700;
+    font-size:17px;
+    padding:6px 10px 18px 10px;
+  }
+  .brand span{color:var(--accent);}
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    color:var(--text-muted);
+    font-size:14px;
+    font-weight:500;
+  }
+  .nav-item:hover{background:var(--bg);}
+  .nav-item.active{background:var(--accent-light);color:var(--accent);}
+  .sidebar-footer{
+    margin-top:auto;
+    padding:12px 10px;
+    border-top:1px solid var(--border);
+    font-size:12.5px;
+    color:var(--text-muted);
+  }
+  .user-picker{
+    margin-top:6px;
+  }
+  select, input, textarea{
+    font-family:inherit;
+    font-size:13.5px;
+  }
+  .user-picker select{
+    width:100%;
+    padding:7px 8px;
+    border-radius:7px;
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  /* Main */
+  .main{
+    flex:1;
+    padding:28px 34px;
+    max-width:1200px;
+  }
+  .page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .page-header h1{
+    font-size:22px;
+    margin:0 0 4px 0;
+  }
+  .page-header p{
+    margin:0;
+    color:var(--text-muted);
+    font-size:13.5px;
+  }
+  .page{display:none;}
+  .page.active{display:block;}
+
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
+    font-size:13.5px;
+    font-weight:600;
+    padding:9px 14px;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn-primary:hover{background:#4338ca;}
+  .btn-ghost{
+    background:transparent;
+    color:var(--text-muted);
+    border:1px solid var(--border);
+  }
+  .btn-ghost:hover{background:var(--bg);}
+  .btn-icon{
+    background:transparent;
+    color:var(--text-muted);
+    padding:4px 6px;
+    font-size:13px;
+  }
+  .btn-icon:hover{color:var(--red);}
+
+  /* Kanban */
+  .board{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .column{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px;
+    min-height:200px;
+  }
+  .column-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  .column-header h3{
+    font-size:13.5px;
+    margin:0;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--text-muted);
+  }
+  .count-badge{
+    background:var(--bg);
+    color:var(--text-muted);
+    font-size:11.5px;
+    padding:2px 8px;
+    border-radius:20px;
+    font-weight:600;
+  }
+  .column.dragover{
+    background:var(--accent-light);
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:11px 12px;
+    margin-bottom:10px;
+    box-shadow:var(--shadow);
+    cursor:grab;
+  }
+  .card:active{cursor:grabbing;}
+  .card-title{
+    font-size:13.5px;
+    font-weight:600;
+    margin:0 0 6px 0;
+  }
+  .card-desc{
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin:0 0 8px 0;
+    white-space:pre-wrap;
+  }
+  .card-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+  .tag{
+    font-size:11px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:20px;
+    background:var(--accent-light);
+    color:var(--accent);
+  }
+  .tag.due-soon{background:#fff7ed;color:var(--yellow);}
+  .tag.overdue{background:#fef2f2;color:var(--red);}
+  .card-actions{display:flex;gap:2px;}
+  .assignee{
+    font-size:11px;
+    color:var(--text-muted);
+  }
+
+  .empty-hint{
+    font-size:12.5px;
+    color:var(--text-muted);
+    text-align:center;
+    padding:18px 6px;
+    border:1px dashed var(--border);
+    border-radius:8px;
+  }
+
+  /* Forms / modal */
+  .form-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+  }
+  .form-row > *{flex:1;min-width:140px;}
+  .form-panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:22px;
+  }
+  .form-panel input, .form-panel select, .form-panel textarea{
+    width:100%;
+    padding:8px 10px;
+    border-radius:7px;
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+  }
+  .form-panel textarea{resize:vertical;min-height:44px;}
+  label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text-muted);
+    margin-bottom:4px;
+  }
+
+  /* Announcements */
+  .announcement{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .announcement-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .announcement-author{
+    font-weight:700;
+    font-size:13.5px;
+  }
+  .announcement-date{
+    font-size:11.5px;
+    color:var(--text-muted);
+  }
+  .announcement-body{
+    font-size:13.5px;
+    line-height:1.5;
+    white-space:pre-wrap;
+    margin:0;
+  }
+  .pin-tag{
+    background:#fff7ed;
+    color:var(--yellow);
+    font-size:11px;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:20px;
+    margin-left:8px;
+  }
+
+  /* Documents */
+  .doc-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:14px;
+  }
+  .doc-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px;
+  }
+  .doc-card h4{
+    margin:0 0 6px 0;
+    font-size:14px;
+  }
+  .doc-card p{
+    margin:0 0 10px 0;
+    font-size:12.5px;
+    color:var(--text-muted);
+    min-height:32px;
+  }
+  .doc-card a{
+    font-size:12.5px;
+    color:var(--accent);
+    font-weight:600;
+    text-decoration:none;
+    word-break:break-all;
+  }
+  .doc-card .doc-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+  }
+  .doc-cat{
+    font-size:11px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:20px;
+    background:var(--accent-light);
+    color:var(--accent);
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  @media (max-width:800px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;flex-direction:row;overflow-x:auto;}
+    .sidebar-footer{display:none;}
+    .board{grid-template-columns:1fr;}
+    .main{padding:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">🛠️ <span>Equipo</span>Work</div>
+
+    <div class="nav-item active" data-page="board">📋 Tablero de tareas</div>
+    <div class="nav-item" data-page="news">📣 Anuncios</div>
+    <div class="nav-item" data-page="docs">📁 Documentos</div>
+
+    <div class="sidebar-footer">
+      <div id="syncStatus" style="margin-bottom:8px;font-weight:600;">🔄 Conectando...</div>
+      <div>Conectado como</div>
+      <div class="user-picker">
+        <select id="userSelect"></select>
+      </div>
+      <div style="margin-top:8px;">
+        <button class="btn-ghost" id="manageUsersBtn" style="width:100%;">+ Gestionar equipo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- TABLERO -->
+    <div class="page active" id="page-board">
+      <div class="page-header">
+        <div>
+          <h1>Tablero de tareas</h1>
+          <p>Organiza el trabajo del equipo. Arrastra las tarjetas entre columnas.</p>
+        </div>
+        <button class="btn-primary" id="newTaskBtn">+ Nueva tarea</button>
+      </div>
+
+      <div class="form-panel" id="taskForm" style="display:none;">
+        <div class="form-row">
+          <div>
+            <label>Título</label>
+            <input type="text" id="taskTitle" placeholder="Ej: Preparar pedido cliente X">
+          </div>
+          <div>
+            <label>Asignado a</label>
+            <select id="taskAssignee"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Descripción</label>
+            <textarea id="taskDesc" placeholder="Detalles de la tarea (opcional)"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Fecha límite</label>
+            <input type="date" id="taskDue">
+          </div>
+          <div>
+            <label>Columna inicial</label>
+            <select id="taskColumn">
+              <option value="todo">Por hacer</option>
+              <option value="doing">En curso</option>
+              <option value="done">Terminado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row" style="justify-content:flex-end;">
+          <button class="btn-ghost" id="cancelTaskBtn" style="flex:0;">Cancelar</button>
+          <button class="btn-primary" id="saveTaskBtn" style="flex:0;">Guardar tarea</button>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="column" data-col="todo">
+          <div class="column-header"><h3>Por hacer</h3><span class="count-badge" id="count-todo">0</span></div>
+          <div class="card-list" id="list-todo"></div>
+        </div>
+        <div class="column" data-col="doing">
+          <div class="column-header"><h3>En curso</h3><span class="count-badge" id="count-doing">0</span></div>
+          <div class="card-list" id="list-doing"></div>
+        </div>
+        <div class="column" data-col="done">
+          <div class="column-header"><h3>Terminado</h3><span class="count-badge" id="count-done">0</span></div>
+          <div class="card-list" id="list-done"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANUNCIOS -->
+    <div class="page" id="page-news">
+      <div class="page-header">
+        <div>
+          <h1>Anuncios del equipo</h1>
+          <p>Comunica novedades importantes a todo el equipo.</p>
+        </div>
+        <button class="btn-primary" id="newAnnouncementBtn">+ Nuevo anuncio</button>
+      </div>
+
+      <div class="form-panel" id="announcementForm" style="display:none;">
+        <div class="form-row">
+          <div>
+            <textarea id="announcementText" placeholder="Escribe el anuncio..." style="min-height:80px;"></textarea>
+          </div>
+        </div>
+        <div class="form-row" style="align-items:center;">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:500;color:var(--text);flex:0;white-space:nowrap;">
+            <input type="checkbox" id="announcementPin" style="width:auto;"> Fijar arriba
+          </label>
+          <div style="flex:1;"></div>
+          <button class="btn-ghost" id="cancelAnnouncementBtn" style="flex:0;">Cancelar</button>
+          <button class="btn-primary" id="saveAnnouncementBtn" style="flex:0;">Publicar</button>
+        </div>
+      </div>
+
+      <div id="announcementList"></div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div class="page" id="page-docs">
+      <div class="page-header">
+        <div>
+          <h1>Documentos y recursos</h1>
+          <p>Enlaces y archivos importantes para el equipo.</p>
+        </div>
+        <button class="btn-primary" id="newDocBtn">+ Agregar documento</button>
+      </div>
+
+      <div class="form-panel" id="docForm" style="display:none;">
+        <div class="form-row">
+          <div>
+            <label>Nombre</label>
+            <input type="text" id="docName" placeholder="Ej: Manual de bienvenida">
+          </div>
+          <div>
+            <label>Categoría</label>
+            <input type="text" id="docCategory" placeholder="Ej: RRHH, Procesos, Finanzas">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Enlace o ruta del archivo</label>
+            <input type="text" id="docUrl" placeholder="https://... o \\servidor\carpeta\archivo">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Descripción</label>
+            <textarea id="docDesc" placeholder="Breve descripción (opcional)"></textarea>
+          </div>
+        </div>
+        <div class="form-row" style="justify-content:flex-end;">
+          <button class="btn-ghost" id="cancelDocBtn" style="flex:0;">Cancelar</button>
+          <button class="btn-primary" id="saveDocBtn" style="flex:0;">Guardar documento</button>
+        </div>
+      </div>
+
+      <div class="doc-list" id="docList"></div>
+    </div>
+
+  </div>
+</div>
+
+<!--
+  ============================================================
+  CONFIGURACIÓN DE FIREBASE — proyecto "mora-cero"
+  ============================================================
+  Reglas de Firestore usadas (pestaña "Reglas" en Firestore Database):
+
+     rules_version = '2';
+     service cloud.firestore {
+       match /databases/{database}/documents {
+         match /{document=**} {
+           allow read, write: if true;
+         }
+       }
+     }
+
+     Nota: estas reglas permiten que cualquiera con el link de la app
+     lea/escriba los datos. Está bien para un equipo interno pequeño,
+     pero no compartas el link públicamente.
+  ============================================================
+-->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAhLCa3f4zcaeaWqJCi9OmBU59vAyeF-Vo",
+    authDomain: "mora-cero.firebaseapp.com",
+    projectId: "mora-cero",
+    storageBucket: "mora-cero.firebasestorage.app",
+    messagingSenderId: "380409829745",
+    appId: "1:380409829745:web:2b114f2f93bdc74acc7ed0"
+  };
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  const db = getFirestore(firebaseApp);
+  const dataRef = doc(db, "equipowork", "shared");
+
+  function uid(){
+    return Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  }
+
+  let data = {
+    users: ["Esteban (Admin)", "Trabajador 1", "Trabajador 2"],
+    tasks: [
+      {id: uid(), title:"Bienvenido a la plataforma", desc:"Usa este tablero para organizar el trabajo del equipo. Puedes arrastrar tarjetas entre columnas.", assignee:"Esteban (Admin)", due:"", col:"todo", created:Date.now()}
+    ],
+    announcements: [
+      {id: uid(), author:"Esteban (Admin)", text:"Bienvenidos a la plataforma interna del equipo. Aquí compartiremos tareas, novedades y documentos importantes.", pinned:true, created:Date.now()}
+    ],
+    docs: [
+      {id: uid(), name:"Ejemplo: Política de horarios", category:"RRHH", url:"https://", desc:"Reemplaza esto con tus propios documentos y enlaces.", created:Date.now()}
+    ]
+  };
+
+  let applyingRemote = false;
+
+  function save(){
+    setDoc(dataRef, data).catch(err=>{
+      console.error(err);
+      setSyncStatus('error');
+      alert("No se pudo guardar en la nube: " + err.message);
+    });
+  }
+
+  function setSyncStatus(state){
+    const el = document.getElementById('syncStatus');
+    if(!el) return;
+    if(state === 'ok') el.innerHTML = '🟢 Sincronizado';
+    else if(state === 'error') el.innerHTML = '🔴 Sin conexión a la nube';
+    else el.innerHTML = '🔄 Conectando...';
+  }
+
+  async function initData(){
+    try{
+      const snap = await getDoc(dataRef);
+      if(snap.exists()){
+        data = snap.data();
+      } else {
+        await setDoc(dataRef, data);
+      }
+      setSyncStatus('ok');
+      renderAll();
+      onSnapshot(dataRef, (snap)=>{
+        if(snap.exists()){
+          applyingRemote = true;
+          data = snap.data();
+          renderAll();
+          applyingRemote = false;
+        }
+        setSyncStatus('ok');
+      }, (err)=>{
+        console.error(err);
+        setSyncStatus('error');
+      });
+    }catch(err){
+      console.error(err);
+      setSyncStatus('error');
+      alert("No se pudo conectar a Firebase. Revisa que hayas configurado firebaseConfig y las reglas de Firestore correctamente.\n\n" + err.message);
+      renderAll();
+    }
+  }
+
+  function renderAll(){
+    renderUserSelects();
+    renderBoard();
+    renderAnnouncements();
+    renderDocs();
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str || "";
+    return d.innerHTML;
+  }
+
+  function fmtDate(ts){
+    const d = new Date(ts);
+    return d.toLocaleDateString('es-ES', {day:'numeric', month:'short', year:'numeric'}) +
+      ' · ' + d.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  // ---------- Navigation ----------
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+      item.classList.add('active');
+      const page = item.dataset.page;
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-'+page).classList.add('active');
+    });
+  });
+
+  // ---------- Users ----------
+  function renderUserSelects(){
+    const sel = document.getElementById('userSelect');
+    const taskSel = document.getElementById('taskAssignee');
+    const current = sel.value;
+    sel.innerHTML = data.users.map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+    taskSel.innerHTML = data.users.map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+    if(current && data.users.includes(current)) sel.value = current;
+  }
+
+  document.getElementById('manageUsersBtn').addEventListener('click', ()=>{
+    const name = prompt("Agregar nuevo miembro del equipo (nombre):");
+    if(name && name.trim()){
+      data.users.push(name.trim());
+      save();
+      renderUserSelects();
+    }
+  });
+
+  function currentUser(){
+    return document.getElementById('userSelect').value || data.users[0];
+  }
+
+  // ---------- Tasks / Board ----------
+  const taskForm = document.getElementById('taskForm');
+  document.getElementById('newTaskBtn').addEventListener('click', ()=>{
+    taskForm.style.display = taskForm.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('cancelTaskBtn').addEventListener('click', ()=>{
+    taskForm.style.display = 'none';
+    clearTaskForm();
+  });
+
+  function clearTaskForm(){
+    document.getElementById('taskTitle').value = '';
+    document.getElementById('taskDesc').value = '';
+    document.getElementById('taskDue').value = '';
+    document.getElementById('taskColumn').value = 'todo';
+  }
+
+  document.getElementById('saveTaskBtn').addEventListener('click', ()=>{
+    const title = document.getElementById('taskTitle').value.trim();
+    if(!title){ alert('Escribe un título para la tarea.'); return; }
+    const task = {
+      id: uid(),
+      title,
+      desc: document.getElementById('taskDesc').value.trim(),
+      assignee: document.getElementById('taskAssignee').value,
+      due: document.getElementById('taskDue').value,
+      col: document.getElementById('taskColumn').value,
+      created: Date.now()
+    };
+    data.tasks.push(task);
+    save();
+    clearTaskForm();
+    taskForm.style.display = 'none';
+    renderBoard();
+  });
+
+  function dueTag(dueStr){
+    if(!dueStr) return '';
+    const due = new Date(dueStr + 'T23:59:59');
+    const now = new Date();
+    const diffDays = Math.ceil((due - now) / (1000*60*60*24));
+    let cls = 'tag';
+    if(diffDays < 0) cls += ' overdue';
+    else if(diffDays <= 2) cls += ' due-soon';
+    const label = due.toLocaleDateString('es-ES', {day:'numeric', month:'short'});
+    return `<span class="${cls}">${diffDays < 0 ? 'Vencida · ' : ''}${label}</span>`;
+  }
+
+  function renderBoard(){
+    ['todo','doing','done'].forEach(col=>{
+      const list = document.getElementById('list-'+col);
+      const items = data.tasks.filter(t=>t.col===col);
+      document.getElementById('count-'+col).textContent = items.length;
+      if(items.length === 0){
+        list.innerHTML = `<div class="empty-hint">Sin tareas</div>`;
+        return;
+      }
+      list.innerHTML = items.map(t=>`
+        <div class="card" draggable="true" data-id="${t.id}">
+          <p class="card-title">${escapeHtml(t.title)}</p>
+          ${t.desc ? `<p class="card-desc">${escapeHtml(t.desc)}</p>` : ''}
+          <div class="card-meta">
+            <div style="display:flex;gap:6px;align-items:center;">
+              ${dueTag(t.due)}
+              <span class="assignee">👤 ${escapeHtml(t.assignee||'Sin asignar')}</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-icon" data-del="${t.id}" title="Eliminar">✕</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    });
+
+    // drag events
+    document.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/plain', card.dataset.id);
+      });
+    });
+    document.querySelectorAll('[data-del]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        if(confirm('¿Eliminar esta tarea?')){
+          data.tasks = data.tasks.filter(t=>t.id !== btn.dataset.del);
+          save();
+          renderBoard();
+        }
+      });
+    });
+  }
+
+  document.querySelectorAll('.column').forEach(col=>{
+    col.addEventListener('dragover', e=>{
+      e.preventDefault();
+      col.classList.add('dragover');
+    });
+    col.addEventListener('dragleave', ()=>col.classList.remove('dragover'));
+    col.addEventListener('drop', e=>{
+      e.preventDefault();
+      col.classList.remove('dragover');
+      const id = e.dataTransfer.getData('text/plain');
+      const task = data.tasks.find(t=>t.id===id);
+      if(task){
+        task.col = col.dataset.col;
+        save();
+        renderBoard();
+      }
+    });
+  });
+
+  // ---------- Announcements ----------
+  const annForm = document.getElementById('announcementForm');
+  document.getElementById('newAnnouncementBtn').addEventListener('click', ()=>{
+    annForm.style.display = annForm.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('cancelAnnouncementBtn').addEventListener('click', ()=>{
+    annForm.style.display = 'none';
+    document.getElementById('announcementText').value='';
+    document.getElementById('announcementPin').checked=false;
+  });
+  document.getElementById('saveAnnouncementBtn').addEventListener('click', ()=>{
+    const text = document.getElementById('announcementText').value.trim();
+    if(!text){ alert('Escribe el contenido del anuncio.'); return; }
+    data.announcements.unshift({
+      id: uid(),
+      author: currentUser(),
+      text,
+      pinned: document.getElementById('announcementPin').checked,
+      created: Date.now()
+    });
+    save();
+    document.getElementById('announcementText').value='';
+    document.getElementById('announcementPin').checked=false;
+    annForm.style.display = 'none';
+    renderAnnouncements();
+  });
+
+  function renderAnnouncements(){
+    const list = document.getElementById('announcementList');
+    if(data.announcements.length===0){
+      list.innerHTML = `<div class="empty-hint">Sin anuncios todavía</div>`;
+      return;
+    }
+    const sorted = [...data.announcements].sort((a,b)=>(b.pinned - a.pinned) || (b.created - a.created));
+    list.innerHTML = sorted.map(a=>`
+      <div class="announcement">
+        <div class="announcement-head">
+          <div>
+            <span class="announcement-author">${escapeHtml(a.author)}</span>
+            ${a.pinned ? '<span class="pin-tag">FIJADO</span>' : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="announcement-date">${fmtDate(a.created)}</span>
+            <button class="btn-icon" data-del-ann="${a.id}" title="Eliminar">✕</button>
+          </div>
+        </div>
+        <p class="announcement-body">${escapeHtml(a.text)}</p>
+      </div>
+    `).join('');
+    document.querySelectorAll('[data-del-ann]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        if(confirm('¿Eliminar este anuncio?')){
+          data.announcements = data.announcements.filter(a=>a.id!==btn.dataset.delAnn);
+          save();
+          renderAnnouncements();
+        }
+      });
+    });
+  }
+
+  // ---------- Documents ----------
+  const docForm = document.getElementById('docForm');
+  document.getElementById('newDocBtn').addEventListener('click', ()=>{
+    docForm.style.display = docForm.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('cancelDocBtn').addEventListener('click', ()=>{
+    docForm.style.display = 'none';
+    clearDocForm();
+  });
+  function clearDocForm(){
+    document.getElementById('docName').value='';
+    document.getElementById('docCategory').value='';
+    document.getElementById('docUrl').value='';
+    document.getElementById('docDesc').value='';
+  }
+  document.getElementById('saveDocBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('docName').value.trim();
+    const url = document.getElementById('docUrl').value.trim();
+    if(!name || !url){ alert('Completa al menos el nombre y el enlace/ruta.'); return; }
+    data.docs.push({
+      id: uid(),
+      name,
+      category: document.getElementById('docCategory').value.trim() || 'General',
+      url,
+      desc: document.getElementById('docDesc').value.trim(),
+      created: Date.now()
+    });
+    save();
+    clearDocForm();
+    docForm.style.display = 'none';
+    renderDocs();
+  });
+
+  function renderDocs(){
+    const list = document.getElementById('docList');
+    if(data.docs.length===0){
+      list.innerHTML = `<div class="empty-hint">Sin documentos todavía</div>`;
+      return;
+    }
+    list.innerHTML = data.docs.map(d=>`
+      <div class="doc-card">
+        <h4>${escapeHtml(d.name)}</h4>
+        <p>${escapeHtml(d.desc || 'Sin descripción')}</p>
+        <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener">${escapeHtml(d.url)}</a>
+        <div class="doc-footer">
+          <span class="doc-cat">${escapeHtml(d.category)}</span>
+          <button class="btn-icon" data-del-doc="${d.id}" title="Eliminar">✕</button>
+        </div>
+      </div>
+    `).join('');
+    document.querySelectorAll('[data-del-doc]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        if(confirm('¿Eliminar este documento?')){
+          data.docs = data.docs.filter(d=>d.id!==btn.dataset.delDoc);
+          save();
+          renderDocs();
+        }
+      });
+    });
+  }
+
+  // ---------- Init ----------
+  initData();
+</script>
+
+</body>
+</html>
