@@ -128,6 +128,9 @@ body {
 .login-header {
   margin-bottom: 2rem;
   text-align: center;
+  padding-bottom: 1.5rem;
+  border-top: 2px solid #8b5cf6;
+  border-bottom: 2px solid #8b5cf6;
 }
 
 .login-header h2 {
