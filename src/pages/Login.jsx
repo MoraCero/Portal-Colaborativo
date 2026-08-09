@@ -42,7 +42,7 @@ export default function Login({ onLogin }) {
       <div className="login-content">
         <div className="login-left">
           <div className="login-hero">
-            <h1>Platform Collaborators</h1>
+            <h1>MORA CERO</h1>
             <p>Gestiona tu equipo de forma inteligente y profesional</p>
             <div className="features">
               <div className="feature">✓ Gestión de tareas</div>
