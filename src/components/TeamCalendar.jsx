@@ -15,7 +15,7 @@ function formatDateKey(date) {
   return date.toISOString().split('T')[0]
 }
 
-export default function TeamCalendar({ collaborators }) {
+export default function TeamCalendar({ collaborators, isAdmin, currentCollaboratorId }) {
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date()))
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
@@ -153,7 +153,12 @@ export default function TeamCalendar({ collaborators }) {
     return c ? c.name : null
   }
 
-  const eventsForDay = (date) => events.filter((e) => e.event_date === formatDateKey(date))
+  const eventsForDay = (date) =>
+    events.filter(
+      (e) =>
+        e.event_date === formatDateKey(date) &&
+        (isAdmin || e.collaborator_id === currentCollaboratorId)
+    )
 
   const weekdayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 

@@ -42,7 +42,19 @@ export default function Dashboard({ user, onLogout }) {
   const currentCollaborator = collaborators.find((c) => c.email === user?.email)
   const isAdmin = currentCollaborator ? currentCollaborator.is_admin : true
 
+  const visibleTasks = isAdmin
+    ? tasks
+    : tasks.filter(
+        (t) => t.assigned_to === currentCollaborator?.id || t.created_by === currentCollaborator?.id
+      )
+
   const taskStats = {
+    pending: visibleTasks.filter(t => t.status === 'pending').length,
+    in_progress: visibleTasks.filter(t => t.status === 'in_progress').length,
+    completed: visibleTasks.filter(t => t.status === 'completed').length,
+  }
+
+  const reportStats = {
     pending: tasks.filter(t => t.status === 'pending').length,
     in_progress: tasks.filter(t => t.status === 'in_progress').length,
     completed: tasks.filter(t => t.status === 'completed').length,
@@ -159,7 +171,7 @@ export default function Dashboard({ user, onLogout }) {
             <>
               {activeTab === 'tasks' && (
                 <TasksList
-                  tasks={tasks}
+                  tasks={visibleTasks}
                   collaborators={collaborators}
                   onRefresh={refreshData}
                   isAdmin={isAdmin}
@@ -183,11 +195,11 @@ export default function Dashboard({ user, onLogout }) {
                       <div className="stat-label">Tareas Totales</div>
                     </div>
                     <div className="stat-card">
-                      <div className="stat-number">{taskStats.completed}</div>
+                      <div className="stat-number">{reportStats.completed}</div>
                       <div className="stat-label">Completadas</div>
                     </div>
                     <div className="stat-card">
-                      <div className="stat-number">{taskStats.in_progress}</div>
+                      <div className="stat-number">{reportStats.in_progress}</div>
                       <div className="stat-label">En Progreso</div>
                     </div>
                   </div>
@@ -203,7 +215,11 @@ export default function Dashboard({ user, onLogout }) {
               )}
 
               {activeTab === 'calendar' && (
-                <TeamCalendar collaborators={collaborators} />
+                <TeamCalendar
+                  collaborators={collaborators}
+                  isAdmin={isAdmin}
+                  currentCollaboratorId={currentCollaborator?.id}
+                />
               )}
 
               {activeTab === 'settings' && (
