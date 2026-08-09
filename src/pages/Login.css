@@ -35,10 +35,10 @@ body {
 
 .login-content {
   display: flex;
-  gap: 3rem;
+  gap: 2rem;
   align-items: center;
-  width: 90%;
-  max-width: 1200px;
+  width: 95%;
+  max-width: 1400px;
   position: relative;
   z-index: 1;
 }
@@ -110,7 +110,7 @@ body {
   border-radius: 16px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   backdrop-filter: blur(10px);
   animation: slideUp 0.5s ease-out;
 }
