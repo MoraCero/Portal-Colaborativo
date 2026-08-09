@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
+import logo from '../assets/logo.png'
 import './Login.css'
 
 export default function Login({ onLogin }) {
@@ -51,7 +52,7 @@ export default function Login({ onLogin }) {
       <div className="login-content">
         <div className="login-left">
           <div className="login-hero">
-            <h1>MORA CERO</h1>
+            <img src={logo} alt="Mora Cero" className="login-logo" />
             <p>Gestiona tu equipo de forma inteligente y profesional</p>
             <div className="features">
               <div className="feature">✓ Gestión de tareas</div>
@@ -64,6 +65,7 @@ export default function Login({ onLogin }) {
 
         <div className="login-right">
           <div className="login-card">
+            <img src={logo} alt="Mora Cero" className="card-logo" />
             <div className="login-header">
               <h2>{isSignUp ? 'Crear Cuenta' : 'Bienvenido'}</h2>
               <p>{isSignUp ? 'Únete a tu equipo' : 'Accede a tu plataforma'}</p>

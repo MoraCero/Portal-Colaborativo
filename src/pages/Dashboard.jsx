@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient'
 import CollaboratorsList from '../components/CollaboratorsList'
 import TasksList from '../components/TasksList'
 import TeamCalendar from '../components/TeamCalendar'
+import logo from '../assets/logo.png'
 import './Dashboard.css'
 
 export default function Dashboard({ user, onLogout }) {
@@ -65,8 +66,7 @@ export default function Dashboard({ user, onLogout }) {
       <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
           <div className="logo">
-            <span className="logo-icon">⚡</span>
-            <span className="logo-text">Consultora</span>
+            <img src={logo} alt="Mora Cero" className="logo-img" />
           </div>
           <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? '◀' : '▶'}

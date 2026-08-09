@@ -32,21 +32,18 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
-  font-weight: 700;
+  overflow: hidden;
 }
 
-.logo-icon {
-  font-size: 1.75rem;
+.logo-img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
-.logo-text {
-  white-space: nowrap;
-}
-
-.sidebar.closed .logo-text {
-  display: none;
+.sidebar.closed .logo-img {
+  height: 32px;
 }
 
 .sidebar-toggle {
