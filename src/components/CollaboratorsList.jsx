@@ -69,13 +69,16 @@ export default function CollaboratorsList({ collaborators, onRefresh, isAdmin })
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
           />
-          <input
-            type="text"
-            placeholder="Rol"
+          <select
             value={formData.role}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             required
-          />
+          >
+            <option value="">Selecciona un rol...</option>
+            <option value="Ejecutivo Comercial - Terreno">Ejecutivo Comercial - Terreno</option>
+            <option value="Ejecutivo Comercial - Online">Ejecutivo Comercial - Online</option>
+            <option value="Consultor">Consultor</option>
+          </select>
           <label className="admin-checkbox">
             <input
               type="checkbox"
