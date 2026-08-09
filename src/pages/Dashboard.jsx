@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import CollaboratorsList from '../components/CollaboratorsList'
 import TasksList from '../components/TasksList'
+import TeamCalendar from '../components/TeamCalendar'
 import './Dashboard.css'
 
 export default function Dashboard({ user, onLogout }) {
@@ -191,11 +192,7 @@ export default function Dashboard({ user, onLogout }) {
               )}
 
               {activeTab === 'calendar' && (
-                <div className="page-content">
-                  <div className="coming-soon">
-                    <p>🚀 Calendario en desarrollo</p>
-                  </div>
-                </div>
+                <TeamCalendar collaborators={collaborators} />
               )}
 
               {activeTab === 'settings' && (
