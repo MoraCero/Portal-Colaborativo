@@ -71,9 +71,10 @@ export default function TeamCalendar({ collaborators }) {
       description: event.description || '',
       start: { dateTime: `${event.event_date}T${event.start_time || '09:00'}:00`, timeZone: 'America/Santiago' },
       end: { dateTime: `${event.event_date}T${event.end_time || '10:00'}:00`, timeZone: 'America/Santiago' },
+      attendees: collaborator?.email ? [{ email: collaborator.email }] : [],
     }
 
-    const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+    const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=all', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -128,9 +129,22 @@ export default function TeamCalendar({ collaborators }) {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (event) => {
     if (!confirm('¿Eliminar este evento?')) return
-    await supabase.from('calendar_events').delete().eq('id', id)
+
+    if (event.google_event_id) {
+      try {
+        const accessToken = await getAccessToken()
+        await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events/${event.google_event_id}?sendUpdates=all`,
+          { method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` } }
+        )
+      } catch {
+        // el evento local igual se borra aunque falle la cancelación en Google
+      }
+    }
+
+    await supabase.from('calendar_events').delete().eq('id', event.id)
     loadEvents()
   }
 
@@ -232,7 +246,7 @@ export default function TeamCalendar({ collaborators }) {
                         <div className="event-collaborator">👤 {getCollaboratorName(event.collaborator_id)}</div>
                       )}
                       {event.google_event_id && <div className="event-synced">✓ Google Calendar</div>}
-                      <button className="event-delete" onClick={() => handleDelete(event.id)}>×</button>
+                      <button className="event-delete" onClick={() => handleDelete(event)}>×</button>
                     </div>
                   ))}
                   {dayEvents.length === 0 && <div className="day-empty">Sin eventos</div>}
