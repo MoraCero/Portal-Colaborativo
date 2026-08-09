@@ -13,7 +13,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #4C1D95 0%, #6D28D9 50%, #7C3AED 100%);
   position: relative;
   overflow: hidden;
   margin: 0;
@@ -145,8 +145,8 @@ body {
   margin-bottom: 2rem;
   text-align: center;
   padding: 1.5rem 0;
-  border-top: 3px solid #8b5cf6;
-  border-bottom: 3px solid #8b5cf6;
+  border-top: 3px solid #6D28D9;
+  border-bottom: 3px solid #6D28D9;
   margin-left: -2.5rem;
   margin-right: -2.5rem;
   padding-left: 2.5rem;
@@ -199,7 +199,7 @@ body {
 
 .form-group input:focus {
   outline: none;
-  border-color: #8b5cf6;
+  border-color: #6D28D9;
   background: white;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
@@ -247,7 +247,7 @@ body {
   padding: 0.875rem 1.5rem;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -336,7 +336,7 @@ body {
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   background: white;
-  color: #8b5cf6;
+  color: #6D28D9;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -347,7 +347,7 @@ body {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  border-color: #8b5cf6;
+  border-color: #6D28D9;
   background: #f3f0ff;
   transform: translateY(-2px);
 }

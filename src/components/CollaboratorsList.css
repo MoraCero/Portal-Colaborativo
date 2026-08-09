@@ -17,7 +17,7 @@
 
 .add-btn {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -54,7 +54,7 @@
 
 .collaborator-form input:focus {
   outline: none;
-  border-color: #8b5cf6;
+  border-color: #6D28D9;
   background: white;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
@@ -85,7 +85,7 @@
 }
 
 .collaborator-form button[type="submit"] {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
   color: white;
 }
 
@@ -125,13 +125,13 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+  background: linear-gradient(90deg, #6D28D9 0%, #7C3AED 100%);
 }
 
 .collaborator-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  border-color: #8b5cf6;
+  border-color: #6D28D9;
 }
 
 .card-header {
@@ -179,7 +179,7 @@
 .collaborator-card .role {
   margin: 0;
   color: white;
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   font-weight: 600;
