@@ -39,6 +39,9 @@ export default function Dashboard({ user, onLogout }) {
     loadTasks()
   }
 
+  const currentCollaborator = collaborators.find((c) => c.email === user?.email)
+  const isAdmin = currentCollaborator ? currentCollaborator.is_admin : true
+
   const taskStats = {
     pending: tasks.filter(t => t.status === 'pending').length,
     in_progress: tasks.filter(t => t.status === 'in_progress').length,
@@ -77,13 +80,15 @@ export default function Dashboard({ user, onLogout }) {
             <span className="badge">{collaborators.length}</span>
           </button>
 
-          <button
-            className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
-            onClick={() => setActiveTab('reports')}
-          >
-            <span className="icon">📊</span>
-            <span className="label">Reportes</span>
-          </button>
+          {isAdmin && (
+            <button
+              className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reports')}
+            >
+              <span className="icon">📊</span>
+              <span className="label">Reportes</span>
+            </button>
+          )}
 
           <button
             className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
@@ -114,8 +119,8 @@ export default function Dashboard({ user, onLogout }) {
           <div className="user-info">
             <div className="user-avatar">👤</div>
             <div className="user-details">
-              <div className="user-name">{user?.email?.split('@')[0]}</div>
-              <div className="user-role">Administrador</div>
+              <div className="user-name">{currentCollaborator?.name || user?.email?.split('@')[0]}</div>
+              <div className="user-role">{isAdmin ? 'Administrador' : (currentCollaborator?.role || 'Colaborador')}</div>
             </div>
           </div>
           <button onClick={onLogout} className="btn-logout">
@@ -153,14 +158,20 @@ export default function Dashboard({ user, onLogout }) {
           ) : (
             <>
               {activeTab === 'tasks' && (
-                <TasksList tasks={tasks} collaborators={collaborators} onRefresh={refreshData} />
+                <TasksList
+                  tasks={tasks}
+                  collaborators={collaborators}
+                  onRefresh={refreshData}
+                  isAdmin={isAdmin}
+                  currentCollaboratorId={currentCollaborator?.id}
+                />
               )}
 
               {activeTab === 'collaborators' && (
-                <CollaboratorsList collaborators={collaborators} onRefresh={refreshData} />
+                <CollaboratorsList collaborators={collaborators} onRefresh={refreshData} isAdmin={isAdmin} />
               )}
 
-              {activeTab === 'reports' && (
+              {activeTab === 'reports' && isAdmin && (
                 <div className="page-content">
                   <div className="stats-grid">
                     <div className="stat-card">

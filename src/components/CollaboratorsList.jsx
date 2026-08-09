@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import './CollaboratorsList.css'
 
-export default function CollaboratorsList({ collaborators, onRefresh }) {
+export default function CollaboratorsList({ collaborators, onRefresh, isAdmin }) {
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: '',
+    is_admin: false,
   })
 
   const handleSubmit = async (e) => {
@@ -17,7 +18,7 @@ export default function CollaboratorsList({ collaborators, onRefresh }) {
       .insert([formData])
 
     if (!error) {
-      setFormData({ name: '', email: '', role: '' })
+      setFormData({ name: '', email: '', role: '', is_admin: false })
       setShowForm(false)
       onRefresh()
     }
@@ -33,16 +34,26 @@ export default function CollaboratorsList({ collaborators, onRefresh }) {
     }
   }
 
+  const toggleAdmin = async (collab) => {
+    await supabase
+      .from('collaborators')
+      .update({ is_admin: !collab.is_admin })
+      .eq('id', collab.id)
+    onRefresh()
+  }
+
   return (
     <div className="collaborators-list">
       <div className="list-header">
         <h2>Colaboradores</h2>
-        <button onClick={() => setShowForm(!showForm)} className="add-btn">
-          + Agregar
-        </button>
+        {isAdmin && (
+          <button onClick={() => setShowForm(!showForm)} className="add-btn">
+            + Agregar
+          </button>
+        )}
       </div>
 
-      {showForm && (
+      {showForm && isAdmin && (
         <form onSubmit={handleSubmit} className="collaborator-form">
           <input
             type="text"
@@ -65,6 +76,14 @@ export default function CollaboratorsList({ collaborators, onRefresh }) {
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             required
           />
+          <label className="admin-checkbox">
+            <input
+              type="checkbox"
+              checked={formData.is_admin}
+              onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
+            />
+            Es administrador
+          </label>
           <button type="submit">Guardar</button>
           <button type="button" onClick={() => setShowForm(false)} className="cancel-btn">
             Cancelar
@@ -77,12 +96,22 @@ export default function CollaboratorsList({ collaborators, onRefresh }) {
           <div key={collab.id} className="collaborator-card">
             <div className="card-header">
               <h3>{collab.name}</h3>
-              <button onClick={() => handleDelete(collab.id)} className="delete-btn">
-                ×
-              </button>
+              {isAdmin && (
+                <button onClick={() => handleDelete(collab.id)} className="delete-btn">
+                  ×
+                </button>
+              )}
             </div>
             <p className="email">{collab.email}</p>
-            <p className="role">{collab.role}</p>
+            <div className="role-row">
+              <p className="role">{collab.role}</p>
+              {collab.is_admin && <span className="admin-badge">Admin</span>}
+            </div>
+            {isAdmin && (
+              <button className="toggle-admin-btn" onClick={() => toggleAdmin(collab)}>
+                {collab.is_admin ? 'Quitar admin' : 'Hacer admin'}
+              </button>
+            )}
           </div>
         ))}
       </div>

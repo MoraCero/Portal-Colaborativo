@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import './TasksList.css'
 
-export default function TasksList({ tasks, collaborators, onRefresh }) {
+export default function TasksList({ tasks, collaborators, onRefresh, isAdmin, currentCollaboratorId }) {
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
@@ -19,6 +19,7 @@ export default function TasksList({ tasks, collaborators, onRefresh }) {
         {
           ...formData,
           assigned_to: formData.assigned_to || null,
+          created_by: currentCollaboratorId || null,
         },
       ])
 
@@ -118,9 +119,11 @@ export default function TasksList({ tasks, collaborators, onRefresh }) {
                 <div key={task.id} className={`task-card status-${status}`}>
                   <div className="task-header">
                     <h4>{task.title}</h4>
-                    <button onClick={() => handleDelete(task.id)} className="delete-btn">
-                      ×
-                    </button>
+                    {(isAdmin || task.created_by === currentCollaboratorId) && (
+                      <button onClick={() => handleDelete(task.id)} className="delete-btn">
+                        ×
+                      </button>
+                    )}
                   </div>
                   {task.description && <p className="task-desc">{task.description}</p>}
                   <p className="task-assigned">

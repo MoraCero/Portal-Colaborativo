@@ -59,6 +59,20 @@
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
+.admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.admin-checkbox input {
+  width: auto;
+  margin: 0;
+}
+
 .collaborator-form button {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -155,6 +169,13 @@
   font-family: 'Monaco', 'Courier', monospace;
 }
 
+.role-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .collaborator-card .role {
   margin: 0;
   color: white;
@@ -166,6 +187,35 @@
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.admin-badge {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.toggle-admin-btn {
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-admin-btn:hover {
+  background: #e5e7eb;
 }
 
 .empty-state {
