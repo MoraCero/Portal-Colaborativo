@@ -11,6 +11,8 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [page, setPage] = useState(0)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [emailFilter, setEmailFilter] = useState('')
+  const [debtFilter, setDebtFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
   const [checkingId, setCheckingId] = useState(null)
@@ -21,7 +23,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
   useEffect(() => {
     loadProspects()
-  }, [page, search, statusFilter])
+  }, [page, search, statusFilter, emailFilter, debtFilter])
 
   useEffect(() => {
     loadEmailCredits()
@@ -56,6 +58,26 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }
     if (statusFilter) {
       query = query.eq('status', statusFilter)
+    }
+
+    if (emailFilter === 'unchecked') {
+      query = query.is('email_checked_at', null)
+    } else if (emailFilter === 'valid') {
+      query = query.eq('email_result', 'valid').or('email_accept_all.is.null,email_accept_all.eq.false')
+    } else if (emailFilter === 'invalid') {
+      query = query.eq('email_result', 'invalid')
+    } else if (emailFilter === 'accept_all') {
+      query = query.eq('email_accept_all', true)
+    } else if (emailFilter === 'unknown') {
+      query = query.eq('email_result', 'unknown')
+    }
+
+    if (debtFilter === 'unchecked') {
+      query = query.is('debt_checked_at', null)
+    } else if (debtFilter === 'has_debt') {
+      query = query.eq('has_debt', true)
+    } else if (debtFilter === 'no_debt') {
+      query = query.eq('has_debt', false)
     }
 
     const { data, count } = await query
@@ -193,6 +215,26 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
           {STATUSES.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
+        </select>
+        <select
+          value={emailFilter}
+          onChange={(e) => { setEmailFilter(e.target.value); setPage(0) }}
+        >
+          <option value="">Correo: todos</option>
+          <option value="unchecked">Correo: sin validar</option>
+          <option value="valid">Correo: válido</option>
+          <option value="invalid">Correo: inválido</option>
+          <option value="accept_all">Correo: accept all</option>
+          <option value="unknown">Correo: desconocido</option>
+        </select>
+        <select
+          value={debtFilter}
+          onChange={(e) => { setDebtFilter(e.target.value); setPage(0) }}
+        >
+          <option value="">Deuda: todos</option>
+          <option value="unchecked">Deuda: sin validar</option>
+          <option value="has_debt">Deuda: con deuda</option>
+          <option value="no_debt">Deuda: sin deuda</option>
         </select>
       </div>
 
