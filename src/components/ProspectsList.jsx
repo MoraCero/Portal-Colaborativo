@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../supabaseClient'
 import './ProspectsList.css'
 
@@ -24,6 +24,18 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [editForm, setEditForm] = useState(null)
   const [editError, setEditError] = useState('')
   const [savingEdit, setSavingEdit] = useState(false)
+  const overlayMouseDownOnSelf = useRef(false)
+
+  const handleOverlayMouseDown = (e) => {
+    overlayMouseDownOnSelf.current = e.target === e.currentTarget
+  }
+
+  const handleOverlayMouseUp = (e, closeFn) => {
+    if (overlayMouseDownOnSelf.current && e.target === e.currentTarget) {
+      closeFn()
+    }
+    overlayMouseDownOnSelf.current = false
+  }
 
   useEffect(() => {
     loadProspects()
@@ -438,7 +450,11 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
       )}
 
       {editProspect && editForm && (
-        <div className="debt-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeEditProspect() }}>
+        <div
+          className="debt-modal-overlay"
+          onMouseDown={handleOverlayMouseDown}
+          onMouseUp={(e) => handleOverlayMouseUp(e, closeEditProspect)}
+        >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="debt-modal-header">
               <h3>Editar Prospecto</h3>
@@ -500,7 +516,11 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
       )}
 
       {detailProspect && (
-        <div className="debt-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setDetailProspect(null) }}>
+        <div
+          className="debt-modal-overlay"
+          onMouseDown={handleOverlayMouseDown}
+          onMouseUp={(e) => handleOverlayMouseUp(e, () => setDetailProspect(null))}
+        >
           <div className="debt-modal" onClick={(e) => e.stopPropagation()}>
             <div className="debt-modal-header">
               <h3>{detailProspect.business_name}</h3>
