@@ -239,6 +239,8 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     patchProspect(editProspect.id, changes)
     setSavingEdit(false)
     closeEditProspect()
+    setMessage('✓ Cambios guardados')
+    setTimeout(() => setMessage(''), 3000)
   }
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -436,7 +438,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
       )}
 
       {editProspect && editForm && (
-        <div className="debt-modal-overlay" onClick={closeEditProspect}>
+        <div className="debt-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeEditProspect() }}>
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="debt-modal-header">
               <h3>Editar Prospecto</h3>
@@ -498,7 +500,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
       )}
 
       {detailProspect && (
-        <div className="debt-modal-overlay" onClick={() => setDetailProspect(null)}>
+        <div className="debt-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setDetailProspect(null) }}>
           <div className="debt-modal" onClick={(e) => e.stopPropagation()}>
             <div className="debt-modal-header">
               <h3>{detailProspect.business_name}</h3>
