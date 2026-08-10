@@ -20,6 +20,10 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [detailProspect, setDetailProspect] = useState(null)
   const [emailCredits, setEmailCredits] = useState(null)
   const [emailCreditsUpdatedAt, setEmailCreditsUpdatedAt] = useState(null)
+  const [editProspect, setEditProspect] = useState(null)
+  const [editForm, setEditForm] = useState(null)
+  const [editError, setEditError] = useState('')
+  const [savingEdit, setSavingEdit] = useState(false)
 
   useEffect(() => {
     loadProspects()
@@ -183,6 +187,60 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }
   }
 
+  const openEditProspect = (prospect) => {
+    setEditProspect(prospect)
+    setEditForm({
+      business_name: prospect.business_name || '',
+      email: prospect.email || '',
+      comuna: prospect.comuna || '',
+      region: prospect.region || '',
+      address: prospect.address || '',
+    })
+    setEditError('')
+  }
+
+  const closeEditProspect = () => {
+    setEditProspect(null)
+    setEditForm(null)
+    setEditError('')
+  }
+
+  const saveEditProspect = async (e) => {
+    e.preventDefault()
+    setSavingEdit(true)
+    setEditError('')
+
+    const emailChanged = editForm.email.trim() !== (editProspect.email || '')
+
+    const changes = {
+      business_name: editForm.business_name.trim(),
+      email: editForm.email.trim(),
+      comuna: editForm.comuna.trim(),
+      region: editForm.region.trim(),
+      address: editForm.address.trim(),
+    }
+
+    if (emailChanged) {
+      changes.email_result = null
+      changes.email_safe_to_send = null
+      changes.email_reason = null
+      changes.email_accept_all = null
+      changes.email_checked_at = null
+    }
+
+    const { error } = await supabase.from('prospects').update(changes).eq('id', editProspect.id)
+
+    if (error) {
+      setEditError(error.message)
+      setSavingEdit(false)
+      return
+    }
+
+    patchProspect(editProspect.id, changes)
+    setSavingEdit(false)
+    closeEditProspect()
+  }
+
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   return (
@@ -263,6 +321,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                     <td>
                       <div className="business-name">{p.business_name}</div>
                       <div className="rut">RUT {p.rut}-{p.dv}</div>
+                      <button className="edit-prospect-btn" onClick={() => openEditProspect(p)}>✎ Editar</button>
                     </td>
                     <td className="rubro-cell">{p.rubro}</td>
                     <td>{p.comuna}<br /><span className="region-text">{p.region}</span></td>
@@ -374,6 +433,68 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
             <button disabled={page + 1 >= totalPages} onClick={() => setPage((p) => p + 1)}>Siguiente →</button>
           </div>
         </>
+      )}
+
+      {editProspect && editForm && (
+        <div className="debt-modal-overlay" onClick={closeEditProspect}>
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="debt-modal-header">
+              <h3>Editar Prospecto</h3>
+              <button onClick={closeEditProspect}>×</button>
+            </div>
+            <form onSubmit={saveEditProspect} className="edit-prospect-form">
+              <label>
+                Nombre / Razón social
+                <input
+                  type="text"
+                  value={editForm.business_name}
+                  onChange={(e) => setEditForm({ ...editForm, business_name: e.target.value })}
+                  required
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                />
+              </label>
+              <label>
+                Comuna
+                <input
+                  type="text"
+                  value={editForm.comuna}
+                  onChange={(e) => setEditForm({ ...editForm, comuna: e.target.value })}
+                />
+              </label>
+              <label>
+                Región
+                <input
+                  type="text"
+                  value={editForm.region}
+                  onChange={(e) => setEditForm({ ...editForm, region: e.target.value })}
+                />
+              </label>
+              <label>
+                Dirección
+                <input
+                  type="text"
+                  value={editForm.address}
+                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                />
+              </label>
+              {editForm.email.trim() !== (editProspect.email || '') && (
+                <div className="edit-hint">El correo cambió — se borrará el resultado de validación anterior.</div>
+              )}
+              {editError && <div className="form-error">{editError}</div>}
+              <div className="form-actions">
+                <button type="button" className="cancel-btn" onClick={closeEditProspect}>Cancelar</button>
+                <button type="submit" disabled={savingEdit}>{savingEdit ? 'Guardando...' : 'Guardar cambios'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {detailProspect && (
