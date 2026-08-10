@@ -11,6 +11,29 @@
   gap: 0.75rem;
 }
 
+.header-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.report-toggle-btn {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.report-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(139, 92, 246, 0.3);
+}
+
 .email-credits-badge {
   background: #f3f0ff;
   color: #5b21b6;

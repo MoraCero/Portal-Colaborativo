@@ -1,0 +1,144 @@
+.prospects-report {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.report-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.close-report-btn {
+  padding: 0.6rem 1.2rem;
+  background: white;
+  color: #6D28D9;
+  border: 1px solid #6D28D9;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.close-report-btn:hover {
+  background: #f3f0ff;
+}
+
+.report-section {
+  margin-bottom: 2rem;
+}
+
+.report-section h3 {
+  color: #374151;
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.report-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.report-number {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #6D28D9;
+  margin-bottom: 0.35rem;
+}
+
+.report-label {
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.highlight-red .report-number {
+  color: #dc2626;
+}
+
+.card-ok .report-number {
+  color: #059669;
+}
+
+.card-bad .report-number {
+  color: #dc2626;
+}
+
+.card-warning .report-number {
+  color: #d97706;
+}
+
+.card-unknown .report-number {
+  color: #6b7280;
+}
+
+.report-table-wrap {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.report-table th {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.report-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+.report-table tr:hover {
+  background: #faf9ff;
+}
+
+.region-text {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.moras-cell {
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.empty-report {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

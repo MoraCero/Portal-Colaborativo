@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../supabaseClient'
+import ProspectsReport from './ProspectsReport'
 import './ProspectsList.css'
 
 const PAGE_SIZE = 50
@@ -24,6 +25,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [editForm, setEditForm] = useState(null)
   const [editError, setEditError] = useState('')
   const [savingEdit, setSavingEdit] = useState(false)
+  const [showReport, setShowReport] = useState(false)
   const overlayMouseDownOnSelf = useRef(false)
 
   const handleOverlayMouseDown = (e) => {
@@ -257,18 +259,29 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
+  if (showReport) {
+    return (
+      <div className="prospects-list">
+        <ProspectsReport onClose={() => setShowReport(false)} />
+      </div>
+    )
+  }
+
   return (
     <div className="prospects-list">
       <div className="list-header">
         <h2>Prospectos <span className="total-count">({totalCount.toLocaleString('es-CL')})</span></h2>
-        {emailCredits !== null && (
-          <div className={`email-credits-badge ${emailCredits <= 10 ? 'credits-low' : ''}`}>
-            📧 {emailCredits} créditos de correo restantes
-            {emailCreditsUpdatedAt && (
-              <span className="credits-updated"> · actualizado {new Date(emailCreditsUpdatedAt).toLocaleString('es-CL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
-            )}
-          </div>
-        )}
+        <div className="header-right-controls">
+          {emailCredits !== null && (
+            <div className={`email-credits-badge ${emailCredits <= 10 ? 'credits-low' : ''}`}>
+              📧 {emailCredits} créditos de correo restantes
+              {emailCreditsUpdatedAt && (
+                <span className="credits-updated"> · actualizado {new Date(emailCreditsUpdatedAt).toLocaleString('es-CL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
+              )}
+            </div>
+          )}
+          <button className="report-toggle-btn" onClick={() => setShowReport(true)}>📊 Ver Reporte</button>
+        </div>
       </div>
 
       <div className="prospects-toolbar">
