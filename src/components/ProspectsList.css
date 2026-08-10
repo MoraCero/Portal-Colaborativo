@@ -214,6 +214,11 @@
   color: #6b7280;
 }
 
+.email-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .check-debt-btn {
   padding: 0.4rem 0.75rem;
   background: white;

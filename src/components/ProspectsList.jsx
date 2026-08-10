@@ -120,6 +120,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
         email_result: data.result,
         email_safe_to_send: data.safeToSend,
         email_reason: data.reason,
+        email_accept_all: data.acceptAll,
         email_checked_at: new Date().toISOString(),
       }
 
@@ -202,13 +203,28 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                         ) : (
                           <div className="email-result">
                             <span
-                              className={`email-badge ${p.email_result === 'valid' ? 'email-ok' : p.email_result === 'unknown' ? 'email-unknown' : 'email-bad'}`}
+                              className={`email-badge ${
+                                p.email_accept_all
+                                  ? 'email-warning'
+                                  : p.email_result === 'valid'
+                                  ? 'email-ok'
+                                  : p.email_result === 'unknown'
+                                  ? 'email-unknown'
+                                  : 'email-bad'
+                              }`}
                               title={
                                 (p.email_reason ? `Motivo: ${p.email_reason}. ` : '') +
+                                (p.email_accept_all ? 'El dominio acepta cualquier correo, no se puede confirmar si existe realmente. ' : '') +
                                 (p.email_safe_to_send ? 'Seguro para enviar.' : 'No recomendado para envío masivo.')
                               }
                             >
-                              {p.email_result === 'valid' ? '✓ Válido' : p.email_result === 'unknown' ? '? Desconocido' : '✕ Inválido'}
+                              {p.email_accept_all
+                                ? '! Accept All'
+                                : p.email_result === 'valid'
+                                ? '✓ Válido'
+                                : p.email_result === 'unknown'
+                                ? '? Desconocido'
+                                : '✕ Inválido'}
                             </span>
                             <button
                               className="recheck-btn"
