@@ -162,6 +162,11 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }
   }
 
+  const searchOnline = (prospect) => {
+    const query = `"${prospect.business_name}" correo contacto`
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank', 'noopener')
+  }
+
   const checkEmail = async (prospect) => {
     if (!prospect.email) {
       setMessage('Este prospecto no tiene email registrado')
@@ -353,7 +358,16 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                     <td className="rubro-cell">{p.rubro}</td>
                     <td>{p.comuna}<br /><span className="region-text">{p.region}</span></td>
                     <td className="email-cell">
-                      <div>{p.email}</div>
+                      <div>{p.email || <span className="no-email">Sin correo</span>}</div>
+                      {(!p.email || (p.email_checked_at && p.email_result !== 'valid')) && (
+                        <button
+                          className="search-online-btn"
+                          onClick={() => searchOnline(p)}
+                          title="Buscar información actualizada en internet"
+                        >
+                          🔍 Buscar en Internet
+                        </button>
+                      )}
                       {p.email && (
                         !p.email_checked_at ? (
                           <button

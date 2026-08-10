@@ -310,6 +310,29 @@
   transform: translateY(-1px);
 }
 
+.no-email {
+  color: #d1d5db;
+  font-style: italic;
+}
+
+.search-online-btn {
+  display: block;
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.search-online-btn:hover {
+  background: #dbeafe;
+}
+
 .check-email-btn {
   margin-top: 0.3rem;
   padding: 0.3rem 0.6rem;
