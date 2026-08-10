@@ -14,6 +14,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
   const [checkingId, setCheckingId] = useState(null)
+  const [checkingEmailId, setCheckingEmailId] = useState(null)
   const [detailProspect, setDetailProspect] = useState(null)
 
   useEffect(() => {
@@ -101,6 +102,37 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }
   }
 
+  const checkEmail = async (prospect) => {
+    if (!prospect.email) {
+      setMessage('Este prospecto no tiene email registrado')
+      setTimeout(() => setMessage(''), 3000)
+      return
+    }
+
+    setCheckingEmailId(prospect.id)
+    try {
+      const res = await fetch(`/api/check-email?email=${encodeURIComponent(prospect.email)}`)
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.error || 'Error al validar el correo')
+
+      const changes = {
+        email_result: data.result,
+        email_safe_to_send: data.safeToSend,
+        email_reason: data.reason,
+        email_checked_at: new Date().toISOString(),
+      }
+
+      await supabase.from('prospects').update(changes).eq('id', prospect.id)
+      patchProspect(prospect.id, changes)
+    } catch (err) {
+      setMessage('Error: ' + err.message)
+      setTimeout(() => setMessage(''), 4000)
+    } finally {
+      setCheckingEmailId(null)
+    }
+  }
+
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   return (
@@ -156,7 +188,37 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                     </td>
                     <td className="rubro-cell">{p.rubro}</td>
                     <td>{p.comuna}<br /><span className="region-text">{p.region}</span></td>
-                    <td className="email-cell">{p.email}</td>
+                    <td className="email-cell">
+                      <div>{p.email}</div>
+                      {p.email && (
+                        !p.email_checked_at ? (
+                          <button
+                            className="check-email-btn"
+                            disabled={checkingEmailId === p.id}
+                            onClick={() => checkEmail(p)}
+                          >
+                            {checkingEmailId === p.id ? 'Validando...' : 'Validar Correo'}
+                          </button>
+                        ) : (
+                          <div className="email-result">
+                            <span
+                              className={`email-badge ${p.email_safe_to_send ? 'email-ok' : 'email-bad'}`}
+                              title={p.email_reason || ''}
+                            >
+                              {p.email_safe_to_send ? '✓ Válido' : '✕ ' + (p.email_result || 'inválido')}
+                            </span>
+                            <button
+                              className="recheck-btn"
+                              disabled={checkingEmailId === p.id}
+                              onClick={() => checkEmail(p)}
+                              title="Volver a validar"
+                            >
+                              {checkingEmailId === p.id ? '...' : '↻'}
+                            </button>
+                          </div>
+                        )
+                      )}
+                    </td>
                     <td>
                       {!p.debt_checked_at ? (
                         <button

@@ -162,6 +162,53 @@
   transform: translateY(-1px);
 }
 
+.check-email-btn {
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: white;
+  color: #6D28D9;
+  border: 1px solid #6D28D9;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.check-email-btn:hover:not(:disabled) {
+  background: #f3f0ff;
+}
+
+.check-email-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.email-result {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.email-badge {
+  padding: 0.25rem 0.55rem;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.email-ok {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.email-bad {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .check-debt-btn {
   padding: 0.4rem 0.75rem;
   background: white;
