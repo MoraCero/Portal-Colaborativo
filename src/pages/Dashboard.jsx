@@ -5,6 +5,7 @@ import TasksList from '../components/TasksList'
 import TeamCalendar from '../components/TeamCalendar'
 import ClientsList from '../components/ClientsList'
 import ProspectsList from '../components/ProspectsList'
+import DocumentsList from '../components/DocumentsList'
 import logo from '../assets/logo.png'
 import './Dashboard.css'
 
@@ -13,6 +14,7 @@ export default function Dashboard({ user, onLogout }) {
   const [collaborators, setCollaborators] = useState([])
   const [tasks, setTasks] = useState([])
   const [clients, setClients] = useState([])
+  const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
@@ -20,6 +22,7 @@ export default function Dashboard({ user, onLogout }) {
     loadCollaborators()
     loadTasks()
     loadClients()
+    loadDocuments()
   }, [])
 
   const loadCollaborators = async () => {
@@ -47,10 +50,19 @@ export default function Dashboard({ user, onLogout }) {
     setClients(data || [])
   }
 
+  const loadDocuments = async () => {
+    const { data } = await supabase
+      .from('documents')
+      .select('*')
+      .order('created_at', { ascending: false })
+    setDocuments(data || [])
+  }
+
   const refreshData = () => {
     loadCollaborators()
     loadTasks()
     loadClients()
+    loadDocuments()
   }
 
   const currentCollaborator = collaborators.find((c) => c.email === user?.email)
@@ -141,6 +153,17 @@ export default function Dashboard({ user, onLogout }) {
             </button>
           )}
 
+          {canSeeClients && (
+            <button
+              className={`nav-item ${activeTab === 'documents' ? 'active' : ''}`}
+              onClick={() => setActiveTab('documents')}
+            >
+              <span className="icon">📄</span>
+              <span className="label">Formatos y Documentos</span>
+              <span className="badge">{documents.length}</span>
+            </button>
+          )}
+
           <button
             className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
             onClick={() => setActiveTab('chat')}
@@ -189,6 +212,7 @@ export default function Dashboard({ user, onLogout }) {
               {activeTab === 'reports' && '📊 Reportes'}
               {activeTab === 'clients' && '🗂️ Base de Clientes'}
               {activeTab === 'prospects' && '🎯 Prospectos'}
+              {activeTab === 'documents' && '📄 Formatos y Documentos'}
               {activeTab === 'chat' && '💬 Chat'}
               {activeTab === 'calendar' && '📅 Calendario'}
               {activeTab === 'settings' && '⚙️ Configuración'}
@@ -236,6 +260,14 @@ export default function Dashboard({ user, onLogout }) {
                 <ProspectsList
                   currentCollaboratorId={currentCollaborator?.id}
                   onClientConverted={loadClients}
+                />
+              )}
+
+              {activeTab === 'documents' && canSeeClients && (
+                <DocumentsList
+                  documents={documents}
+                  onRefresh={refreshData}
+                  currentCollaboratorId={currentCollaborator?.id}
                 />
               )}
 

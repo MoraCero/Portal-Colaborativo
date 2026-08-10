@@ -1,0 +1,248 @@
+.documents-list {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.add-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+}
+
+.documents-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.documents-toolbar select {
+  padding: 0.65rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+.document-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.document-form input,
+.document-form select,
+.document-form textarea {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+.document-form textarea {
+  resize: vertical;
+  min-height: 140px;
+  font-family: 'Monaco', 'Courier', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.document-form input:focus,
+.document-form select:focus,
+.document-form textarea:focus {
+  outline: none;
+  border-color: #6D28D9;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.form-error {
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #dc2626;
+  font-size: 0.85rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.form-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form-actions button[type="submit"] {
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  color: white;
+}
+
+.form-actions .cancel-btn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.document-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.document-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.category-badge {
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  color: white;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  color: #ef4444;
+}
+
+.document-card h3 {
+  margin: 0.5rem 0;
+  color: #1f2937;
+  font-size: 1.05rem;
+}
+
+.document-preview {
+  color: #6b7280;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-height: 120px;
+  overflow-y: auto;
+  background: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  flex: 1;
+}
+
+.file-link {
+  color: #6D28D9;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 0.5rem 0;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.document-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.copy-btn,
+.edit-btn {
+  flex: 1;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copy-btn:hover,
+.edit-btn:hover {
+  background: #e5e7eb;
+}
+
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+}
