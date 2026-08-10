@@ -329,8 +329,63 @@
   white-space: nowrap;
 }
 
-.search-online-btn:hover {
+.search-online-btn:hover:not(:disabled) {
   background: #dbeafe;
+}
+
+.search-online-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.online-search-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.online-result-found {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+}
+
+.online-found-email {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #166534;
+  word-break: break-all;
+}
+
+.apply-online-email-btn {
+  padding: 0.3rem 0.5rem;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+.apply-online-email-btn:hover {
+  background: #15803d;
+}
+
+.online-result-empty {
+  font-size: 0.68rem;
+  color: #9ca3af;
+}
+
+.online-result-empty a {
+  color: #6D28D9;
+  font-weight: 600;
 }
 
 .check-email-btn {

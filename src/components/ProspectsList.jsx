@@ -18,6 +18,8 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [message, setMessage] = useState('')
   const [checkingId, setCheckingId] = useState(null)
   const [checkingEmailId, setCheckingEmailId] = useState(null)
+  const [searchingOnlineId, setSearchingOnlineId] = useState(null)
+  const [onlineResults, setOnlineResults] = useState({})
   const [detailProspect, setDetailProspect] = useState(null)
   const [emailCredits, setEmailCredits] = useState(null)
   const [emailCreditsUpdatedAt, setEmailCreditsUpdatedAt] = useState(null)
@@ -162,9 +164,55 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }
   }
 
-  const searchOnline = (prospect) => {
-    const query = `"${prospect.business_name}" correo contacto`
-    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank', 'noopener')
+  const searchOnline = async (prospect) => {
+    setSearchingOnlineId(prospect.id)
+    try {
+      const params = new URLSearchParams({
+        businessName: prospect.business_name || '',
+        comuna: prospect.comuna || '',
+      })
+      const res = await fetch(`/api/find-contact?${params.toString()}`)
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.error || 'Error al buscar en internet')
+
+      setOnlineResults((prev) => ({
+        ...prev,
+        [prospect.id]: { email: data.email || null, searchUrl: data.searchUrl },
+      }))
+    } catch (err) {
+      setMessage('Error al buscar en internet: ' + err.message)
+      setTimeout(() => setMessage(''), 4000)
+    } finally {
+      setSearchingOnlineId(null)
+    }
+  }
+
+  const applyOnlineEmail = async (prospect, email) => {
+    const changes = {
+      email,
+      email_result: null,
+      email_safe_to_send: null,
+      email_reason: null,
+      email_accept_all: null,
+      email_checked_at: null,
+    }
+
+    const { error } = await supabase.from('prospects').update(changes).eq('id', prospect.id)
+    if (error) {
+      setMessage('Error al guardar: ' + error.message)
+      setTimeout(() => setMessage(''), 4000)
+      return
+    }
+
+    patchProspect(prospect.id, changes)
+    setOnlineResults((prev) => {
+      const next = { ...prev }
+      delete next[prospect.id]
+      return next
+    })
+    setMessage(`✓ Correo actualizado para ${prospect.business_name}`)
+    setTimeout(() => setMessage(''), 3000)
   }
 
   const checkEmail = async (prospect) => {
@@ -360,13 +408,36 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                     <td className="email-cell">
                       <div>{p.email || <span className="no-email">Sin correo</span>}</div>
                       {(!p.email || (p.email_checked_at && p.email_result !== 'valid')) && (
-                        <button
-                          className="search-online-btn"
-                          onClick={() => searchOnline(p)}
-                          title="Buscar información actualizada en internet"
-                        >
-                          🔍 Buscar en Internet
-                        </button>
+                        <div className="online-search-block">
+                          <button
+                            className="search-online-btn"
+                            disabled={searchingOnlineId === p.id}
+                            onClick={() => searchOnline(p)}
+                            title="Buscar correo actualizado automáticamente en internet"
+                          >
+                            {searchingOnlineId === p.id ? 'Buscando...' : '🔍 Buscar en Internet'}
+                          </button>
+                          {onlineResults[p.id] && (
+                            onlineResults[p.id].email ? (
+                              <div className="online-result-found">
+                                <span className="online-found-email">{onlineResults[p.id].email}</span>
+                                <button
+                                  className="apply-online-email-btn"
+                                  onClick={() => applyOnlineEmail(p, onlineResults[p.id].email)}
+                                >
+                                  ✓ Usar este correo
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="online-result-empty">
+                                Sin coincidencias claras.{' '}
+                                <a href={onlineResults[p.id].searchUrl} target="_blank" rel="noopener noreferrer">
+                                  Buscar manualmente
+                                </a>
+                              </div>
+                            )
+                          )}
+                        </div>
                       )}
                       {p.email && (
                         !p.email_checked_at ? (
