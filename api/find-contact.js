@@ -41,7 +41,7 @@ function extractBestEmail(text, businessName) {
 export default async function handler(req, res) {
   const businessName = (req.query.businessName || '').trim()
   const comuna = (req.query.comuna || '').trim()
-  const { GOOGLE_SEARCH_API_KEY, GOOGLE_SEARCH_ENGINE_ID } = process.env
+  const { SERPER_API_KEY } = process.env
 
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`"${businessName}" correo contacto`)}`
 
@@ -50,24 +50,30 @@ export default async function handler(req, res) {
     return
   }
 
-  if (!GOOGLE_SEARCH_API_KEY || !GOOGLE_SEARCH_ENGINE_ID) {
-    res.status(500).json({ error: 'Google Custom Search no está configurado en el servidor', searchUrl })
+  if (!SERPER_API_KEY) {
+    res.status(500).json({ error: 'Serper no está configurado en el servidor', searchUrl })
     return
   }
 
   const searchQuery = `"${businessName}" correo contacto ${comuna}`.trim()
 
   try {
-    const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_API_KEY}&cx=${GOOGLE_SEARCH_ENGINE_ID}&q=${encodeURIComponent(searchQuery)}&num=10`
-    const response = await fetch(url)
+    const response = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': SERPER_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ q: searchQuery, num: 10, gl: 'cl', hl: 'es' }),
+    })
     const data = await response.json()
 
-    if (data.error) {
-      res.status(502).json({ error: data.error.message || 'Error al consultar Google', searchUrl })
+    if (!response.ok) {
+      res.status(502).json({ error: data.message || 'Error al consultar Serper', searchUrl })
       return
     }
 
-    const items = data.items || []
+    const items = data.organic || []
     const combinedText = items.map((item) => `${item.title || ''} ${item.snippet || ''}`).join(' ')
     const email = extractBestEmail(combinedText, businessName)
     const sourceItem = email
@@ -81,6 +87,6 @@ export default async function handler(req, res) {
       resultsChecked: items.length,
     })
   } catch (err) {
-    res.status(500).json({ error: 'No se pudo consultar Google Custom Search: ' + err.message, searchUrl })
+    res.status(500).json({ error: 'No se pudo consultar Serper: ' + err.message, searchUrl })
   }
 }
