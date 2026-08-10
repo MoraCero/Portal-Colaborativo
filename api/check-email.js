@@ -22,6 +22,8 @@ export default async function handler(req, res) {
       return
     }
 
+    const remainingHeader = response.headers.get('x-qev-remaining-credits')
+
     res.status(200).json({
       email: data.email,
       result: data.result,
@@ -32,6 +34,7 @@ export default async function handler(req, res) {
       free: data.free === 'true',
       safeToSend: data.safe_to_send === 'true',
       didYouMean: data.did_you_mean || null,
+      remainingCredits: remainingHeader ? Number(remainingHeader) : null,
     })
   } catch (err) {
     res.status(500).json({ error: 'No se pudo consultar QuickEmailVerification: ' + err.message })

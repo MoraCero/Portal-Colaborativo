@@ -16,10 +16,30 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [checkingId, setCheckingId] = useState(null)
   const [checkingEmailId, setCheckingEmailId] = useState(null)
   const [detailProspect, setDetailProspect] = useState(null)
+  const [emailCredits, setEmailCredits] = useState(null)
+  const [emailCreditsUpdatedAt, setEmailCreditsUpdatedAt] = useState(null)
 
   useEffect(() => {
     loadProspects()
   }, [page, search, statusFilter])
+
+  useEffect(() => {
+    loadEmailCredits()
+  }, [])
+
+  const loadEmailCredits = async () => {
+    const { data } = await supabase
+      .from('email_credits_status')
+      .select('*')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (data) {
+      setEmailCredits(data.remaining)
+      setEmailCreditsUpdatedAt(data.updated_at)
+    }
+  }
 
   const loadProspects = async () => {
     setLoading(true)
@@ -126,6 +146,13 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
       await supabase.from('prospects').update(changes).eq('id', prospect.id)
       patchProspect(prospect.id, changes)
+
+      if (data.remainingCredits !== null && data.remainingCredits !== undefined) {
+        const now = new Date().toISOString()
+        await supabase.from('email_credits_status').insert([{ remaining: data.remainingCredits, updated_at: now }])
+        setEmailCredits(data.remainingCredits)
+        setEmailCreditsUpdatedAt(now)
+      }
     } catch (err) {
       setMessage('Error: ' + err.message)
       setTimeout(() => setMessage(''), 4000)
@@ -140,6 +167,14 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     <div className="prospects-list">
       <div className="list-header">
         <h2>Prospectos <span className="total-count">({totalCount.toLocaleString('es-CL')})</span></h2>
+        {emailCredits !== null && (
+          <div className={`email-credits-badge ${emailCredits <= 10 ? 'credits-low' : ''}`}>
+            📧 {emailCredits} créditos de correo restantes
+            {emailCreditsUpdatedAt && (
+              <span className="credits-updated"> · actualizado {new Date(emailCreditsUpdatedAt).toLocaleString('es-CL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="prospects-toolbar">

@@ -4,6 +4,30 @@
 
 .list-header {
   margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.email-credits-badge {
+  background: #f3f0ff;
+  color: #5b21b6;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.email-credits-badge.credits-low {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.credits-updated {
+  font-weight: 400;
+  opacity: 0.75;
 }
 
 .list-header h2 {
