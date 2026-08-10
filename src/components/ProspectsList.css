@@ -209,6 +209,11 @@
   color: #991b1b;
 }
 
+.email-unknown {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
 .check-debt-btn {
   padding: 0.4rem 0.75rem;
   background: white;

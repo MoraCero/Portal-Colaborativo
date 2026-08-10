@@ -202,10 +202,13 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                         ) : (
                           <div className="email-result">
                             <span
-                              className={`email-badge ${p.email_safe_to_send ? 'email-ok' : 'email-bad'}`}
-                              title={p.email_reason || ''}
+                              className={`email-badge ${p.email_result === 'valid' ? 'email-ok' : p.email_result === 'unknown' ? 'email-unknown' : 'email-bad'}`}
+                              title={
+                                (p.email_reason ? `Motivo: ${p.email_reason}. ` : '') +
+                                (p.email_safe_to_send ? 'Seguro para enviar.' : 'No recomendado para envío masivo.')
+                              }
                             >
-                              {p.email_safe_to_send ? '✓ Válido' : '✕ ' + (p.email_result || 'inválido')}
+                              {p.email_result === 'valid' ? '✓ Válido' : p.email_result === 'unknown' ? '? Desconocido' : '✕ Inválido'}
                             </span>
                             <button
                               className="recheck-btn"
