@@ -2,26 +2,59 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import './CollaboratorsList.css'
 
+const emptyForm = { name: '', email: '', role: '', is_admin: false }
+
 export default function CollaboratorsList({ collaborators, onRefresh, isAdmin }) {
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    role: '',
-    is_admin: false,
-  })
+  const [editingId, setEditingId] = useState(null)
+  const [formData, setFormData] = useState(emptyForm)
+  const [error, setError] = useState('')
+
+  const openAddForm = () => {
+    setEditingId(null)
+    setFormData(emptyForm)
+    setError('')
+    setShowForm(true)
+  }
+
+  const openEditForm = (collab) => {
+    setEditingId(collab.id)
+    setFormData({
+      name: collab.name,
+      email: collab.email,
+      role: collab.role,
+      is_admin: collab.is_admin,
+    })
+    setError('')
+    setShowForm(true)
+  }
+
+  const closeForm = () => {
+    setShowForm(false)
+    setEditingId(null)
+    setFormData(emptyForm)
+    setError('')
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const { error } = await supabase
-      .from('collaborators')
-      .insert([formData])
+    setError('')
 
-    if (!error) {
-      setFormData({ name: '', email: '', role: '', is_admin: false })
-      setShowForm(false)
-      onRefresh()
+    const { error: err } = editingId
+      ? await supabase.from('collaborators').update(formData).eq('id', editingId)
+      : await supabase.from('collaborators').insert([formData])
+
+    if (err) {
+      setError(
+        err.code === '23505'
+          ? 'Ya existe un colaborador con ese email.'
+          : err.message
+      )
+      return
     }
+
+    closeForm()
+    onRefresh()
   }
 
   const handleDelete = async (id) => {
@@ -47,8 +80,8 @@ export default function CollaboratorsList({ collaborators, onRefresh, isAdmin })
       <div className="list-header">
         <h2>Colaboradores</h2>
         {isAdmin && (
-          <button onClick={() => setShowForm(!showForm)} className="add-btn">
-            + Agregar
+          <button onClick={showForm ? closeForm : openAddForm} className="add-btn">
+            {showForm ? 'Cerrar' : '+ Agregar'}
           </button>
         )}
       </div>
@@ -87,8 +120,9 @@ export default function CollaboratorsList({ collaborators, onRefresh, isAdmin })
             />
             Es administrador
           </label>
-          <button type="submit">Guardar</button>
-          <button type="button" onClick={() => setShowForm(false)} className="cancel-btn">
+          {error && <div className="form-error">{error}</div>}
+          <button type="submit">{editingId ? 'Guardar cambios' : 'Guardar'}</button>
+          <button type="button" onClick={closeForm} className="cancel-btn">
             Cancelar
           </button>
         </form>
@@ -111,9 +145,14 @@ export default function CollaboratorsList({ collaborators, onRefresh, isAdmin })
               {collab.is_admin && <span className="admin-badge">Admin</span>}
             </div>
             {isAdmin && (
-              <button className="toggle-admin-btn" onClick={() => toggleAdmin(collab)}>
-                {collab.is_admin ? 'Quitar admin' : 'Hacer admin'}
-              </button>
+              <div className="card-actions">
+                <button className="toggle-admin-btn" onClick={() => openEditForm(collab)}>
+                  Editar
+                </button>
+                <button className="toggle-admin-btn" onClick={() => toggleAdmin(collab)}>
+                  {collab.is_admin ? 'Quitar admin' : 'Hacer admin'}
+                </button>
+              </div>
             )}
           </div>
         ))}
