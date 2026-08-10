@@ -162,6 +162,151 @@
   transform: translateY(-1px);
 }
 
+.check-debt-btn {
+  padding: 0.4rem 0.75rem;
+  background: white;
+  color: #6D28D9;
+  border: 1px solid #6D28D9;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.check-debt-btn:hover:not(:disabled) {
+  background: #f3f0ff;
+}
+
+.check-debt-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.debt-result {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.debt-badge {
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: none;
+  cursor: default;
+  white-space: nowrap;
+}
+
+button.debt-badge {
+  cursor: pointer;
+}
+
+.debt-yes {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.debt-no {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.recheck-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+}
+
+.recheck-btn:hover:not(:disabled) {
+  color: #6D28D9;
+}
+
+.debt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.debt-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.debt-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.debt-modal-header h3 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.debt-modal-header button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.debt-modal-subtitle {
+  color: #991b1b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 0 0 1rem 0;
+}
+
+.debt-modal-table-wrap {
+  overflow: auto;
+}
+
+.debt-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.debt-detail-table th {
+  text-align: left;
+  padding: 0.6rem;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+}
+
+.debt-detail-table td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+.contact-detail {
+  color: #9ca3af;
+  font-size: 0.72rem;
+}
+
 .pagination {
   display: flex;
   justify-content: center;

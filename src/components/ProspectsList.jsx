@@ -13,6 +13,8 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
+  const [checkingId, setCheckingId] = useState(null)
+  const [detailProspect, setDetailProspect] = useState(null)
 
   useEffect(() => {
     loadProspects()
@@ -68,6 +70,34 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }
   }
 
+  const checkDebt = async (prospect) => {
+    setCheckingId(prospect.id)
+    try {
+      const rut = `${prospect.rut}-${prospect.dv}`
+      const res = await fetch(`/api/check-mora?rut=${encodeURIComponent(rut)}`)
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.error || 'Error al validar')
+
+      await supabase
+        .from('prospects')
+        .update({
+          has_debt: data.hasDebt,
+          debt_count: data.count,
+          debt_records: data.records || [],
+          debt_checked_at: new Date().toISOString(),
+        })
+        .eq('id', prospect.id)
+
+      loadProspects()
+    } catch (err) {
+      setMessage('Error: ' + err.message)
+      setTimeout(() => setMessage(''), 4000)
+    } finally {
+      setCheckingId(null)
+    }
+  }
+
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   return (
@@ -109,6 +139,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                   <th>Rubro</th>
                   <th>Comuna / Región</th>
                   <th>Email</th>
+                  <th>Deuda</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -123,6 +154,35 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                     <td className="rubro-cell">{p.rubro}</td>
                     <td>{p.comuna}<br /><span className="region-text">{p.region}</span></td>
                     <td className="email-cell">{p.email}</td>
+                    <td>
+                      {!p.debt_checked_at ? (
+                        <button
+                          className="check-debt-btn"
+                          disabled={checkingId === p.id}
+                          onClick={() => checkDebt(p)}
+                        >
+                          {checkingId === p.id ? 'Validando...' : 'Validar Deuda'}
+                        </button>
+                      ) : (
+                        <div className="debt-result">
+                          {p.has_debt ? (
+                            <button className="debt-badge debt-yes" onClick={() => setDetailProspect(p)}>
+                              ⚠ {p.debt_count} moras
+                            </button>
+                          ) : (
+                            <span className="debt-badge debt-no">✓ Sin deuda</span>
+                          )}
+                          <button
+                            className="recheck-btn"
+                            disabled={checkingId === p.id}
+                            onClick={() => checkDebt(p)}
+                            title="Volver a validar"
+                          >
+                            {checkingId === p.id ? '...' : '↻'}
+                          </button>
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <select
                         className={`status-select status-${p.status.toLowerCase().replace(/\s/g, '-')}`}
@@ -153,6 +213,47 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
             <button disabled={page + 1 >= totalPages} onClick={() => setPage((p) => p + 1)}>Siguiente →</button>
           </div>
         </>
+      )}
+
+      {detailProspect && (
+        <div className="debt-modal-overlay" onClick={() => setDetailProspect(null)}>
+          <div className="debt-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="debt-modal-header">
+              <h3>{detailProspect.business_name}</h3>
+              <button onClick={() => setDetailProspect(null)}>×</button>
+            </div>
+            <p className="debt-modal-subtitle">
+              {detailProspect.debt_count} posibles moras previsionales encontradas
+            </p>
+            <div className="debt-modal-table-wrap">
+              <table className="debt-detail-table">
+                <thead>
+                  <tr>
+                    <th>Afiliado</th>
+                    <th>Producto</th>
+                    <th>AFP/AFC</th>
+                    <th>Período</th>
+                    <th>Contacto Previred</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(detailProspect.debt_records || []).map((r, i) => (
+                    <tr key={i}>
+                      <td>{r.nombreAfiliado}</td>
+                      <td>{r.tipoProducto}</td>
+                      <td>{r.afpAfc}</td>
+                      <td>{r.periodo}</td>
+                      <td>
+                        {r.contacto}<br />
+                        <span className="contact-detail">{r.telefonoContacto} · {r.correoContacto}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
