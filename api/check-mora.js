@@ -1,5 +1,11 @@
 const BASE_URL = 'https://tramites.dirtrab.cl/webitel2013/MoraPrev/GetMoraPrev.aspx'
 
+const BROWSER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language': 'es-CL,es;q=0.9',
+}
+
 function decodeLatin1(buffer) {
   return new TextDecoder('iso-8859-1').decode(buffer)
 }
@@ -23,7 +29,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const getResp = await fetch(BASE_URL)
+    const getResp = await fetch(BASE_URL, { headers: BROWSER_HEADERS })
     const getHtml = decodeLatin1(await getResp.arrayBuffer())
     const cookies = getResp.headers.get('set-cookie') || ''
 
@@ -44,8 +50,10 @@ export default async function handler(req, res) {
     const postResp = await fetch(BASE_URL, {
       method: 'POST',
       headers: {
+        ...BROWSER_HEADERS,
         'Content-Type': 'application/x-www-form-urlencoded',
         Cookie: cookies,
+        Referer: BASE_URL,
       },
       body: body.toString(),
     })
