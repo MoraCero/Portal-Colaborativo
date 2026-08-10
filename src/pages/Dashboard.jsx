@@ -4,6 +4,7 @@ import CollaboratorsList from '../components/CollaboratorsList'
 import TasksList from '../components/TasksList'
 import TeamCalendar from '../components/TeamCalendar'
 import ClientsList from '../components/ClientsList'
+import ProspectsList from '../components/ProspectsList'
 import logo from '../assets/logo.png'
 import './Dashboard.css'
 
@@ -130,6 +131,16 @@ export default function Dashboard({ user, onLogout }) {
             </button>
           )}
 
+          {canSeeClients && (
+            <button
+              className={`nav-item ${activeTab === 'prospects' ? 'active' : ''}`}
+              onClick={() => setActiveTab('prospects')}
+            >
+              <span className="icon">🎯</span>
+              <span className="label">Prospectos</span>
+            </button>
+          )}
+
           <button
             className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
             onClick={() => setActiveTab('chat')}
@@ -177,6 +188,7 @@ export default function Dashboard({ user, onLogout }) {
               {activeTab === 'collaborators' && '👥 Colaboradores'}
               {activeTab === 'reports' && '📊 Reportes'}
               {activeTab === 'clients' && '🗂️ Base de Clientes'}
+              {activeTab === 'prospects' && '🎯 Prospectos'}
               {activeTab === 'chat' && '💬 Chat'}
               {activeTab === 'calendar' && '📅 Calendario'}
               {activeTab === 'settings' && '⚙️ Configuración'}
@@ -217,6 +229,13 @@ export default function Dashboard({ user, onLogout }) {
                   clients={visibleClients}
                   onRefresh={refreshData}
                   currentCollaboratorId={currentCollaborator?.id}
+                />
+              )}
+
+              {activeTab === 'prospects' && canSeeClients && (
+                <ProspectsList
+                  currentCollaboratorId={currentCollaborator?.id}
+                  onClientConverted={loadClients}
                 />
               )}
 
