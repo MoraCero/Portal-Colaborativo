@@ -43,9 +43,13 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     setLoading(false)
   }
 
+  const patchProspect = (id, changes) => {
+    setProspects((prev) => prev.map((p) => (p.id === id ? { ...p, ...changes } : p)))
+  }
+
   const updateStatus = async (id, status) => {
+    patchProspect(id, { status })
     await supabase.from('prospects').update({ status }).eq('id', id)
-    loadProspects()
   }
 
   const convertToClient = async (prospect) => {
@@ -59,13 +63,14 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     }])
 
     if (!error) {
+      const assigned_to = currentCollaboratorId || null
       await supabase
         .from('prospects')
-        .update({ status: 'Convertido', assigned_to: currentCollaboratorId || null })
+        .update({ status: 'Convertido', assigned_to })
         .eq('id', prospect.id)
+      patchProspect(prospect.id, { status: 'Convertido', assigned_to })
       setMessage(`✓ ${prospect.business_name} agregado a Base de Clientes`)
       setTimeout(() => setMessage(''), 3000)
-      loadProspects()
       onClientConverted?.()
     }
   }
@@ -79,17 +84,15 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
       if (!res.ok) throw new Error(data.error || 'Error al validar')
 
-      await supabase
-        .from('prospects')
-        .update({
-          has_debt: data.hasDebt,
-          debt_count: data.count,
-          debt_records: data.records || [],
-          debt_checked_at: new Date().toISOString(),
-        })
-        .eq('id', prospect.id)
+      const changes = {
+        has_debt: data.hasDebt,
+        debt_count: data.count,
+        debt_records: data.records || [],
+        debt_checked_at: new Date().toISOString(),
+      }
 
-      loadProspects()
+      await supabase.from('prospects').update(changes).eq('id', prospect.id)
+      patchProspect(prospect.id, changes)
     } catch (err) {
       setMessage('Error: ' + err.message)
       setTimeout(() => setMessage(''), 4000)
