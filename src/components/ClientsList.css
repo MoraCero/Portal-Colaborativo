@@ -1,0 +1,256 @@
+.clients-list {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.add-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+}
+
+.client-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.client-form input,
+.client-form select,
+.client-form textarea {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+.client-form textarea {
+  grid-column: 1 / -1;
+  resize: vertical;
+  min-height: 70px;
+}
+
+.client-form input:focus,
+.client-form select:focus,
+.client-form textarea:focus {
+  outline: none;
+  border-color: #6D28D9;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.form-error {
+  grid-column: 1 / -1;
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #dc2626;
+  font-size: 0.85rem;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.form-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form-actions button[type="submit"] {
+  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  color: white;
+}
+
+.form-actions .cancel-btn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.client-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.client-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6D28D9 0%, #7C3AED 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.05rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  color: #ef4444;
+}
+
+.client-company {
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.client-detail {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0.2rem 0;
+}
+
+.client-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0;
+}
+
+.status-badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.status-contactado { background: #dbeafe; color: #1e40af; }
+.status-en-proceso { background: #fef3c7; color: #92400e; }
+.status-negociacion { background: #ede9fe; color: #5b21b6; }
+.status-cerrado { background: #d1fae5; color: #065f46; }
+.status-perdido { background: #fee2e2; color: #991b1b; }
+
+.debt-amount {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 0.9rem;
+}
+
+.client-notes {
+  color: #6b7280;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  background: #f9fafb;
+  padding: 0.6rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+}
+
+.edit-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+  background: #e5e7eb;
+}
+
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .clients-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .client-form {
+    grid-template-columns: 1fr;
+  }
+}

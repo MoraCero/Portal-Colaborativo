@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient'
 import CollaboratorsList from '../components/CollaboratorsList'
 import TasksList from '../components/TasksList'
 import TeamCalendar from '../components/TeamCalendar'
+import ClientsList from '../components/ClientsList'
 import logo from '../assets/logo.png'
 import './Dashboard.css'
 
@@ -10,12 +11,14 @@ export default function Dashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('tasks')
   const [collaborators, setCollaborators] = useState([])
   const [tasks, setTasks] = useState([])
+  const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   useEffect(() => {
     loadCollaborators()
     loadTasks()
+    loadClients()
   }, [])
 
   const loadCollaborators = async () => {
@@ -35,13 +38,27 @@ export default function Dashboard({ user, onLogout }) {
     setTasks(data || [])
   }
 
+  const loadClients = async () => {
+    const { data } = await supabase
+      .from('clients')
+      .select('*')
+      .order('created_at', { ascending: false })
+    setClients(data || [])
+  }
+
   const refreshData = () => {
     loadCollaborators()
     loadTasks()
+    loadClients()
   }
 
   const currentCollaborator = collaborators.find((c) => c.email === user?.email)
   const isAdmin = currentCollaborator ? currentCollaborator.is_admin : true
+  const canSeeClients = isAdmin || currentCollaborator?.role === 'Ejecutivo Comercial - Online'
+
+  const visibleClients = isAdmin
+    ? clients
+    : clients.filter((c) => c.created_by === currentCollaborator?.id)
 
   const visibleTasks = isAdmin
     ? tasks
@@ -102,6 +119,17 @@ export default function Dashboard({ user, onLogout }) {
             </button>
           )}
 
+          {canSeeClients && (
+            <button
+              className={`nav-item ${activeTab === 'clients' ? 'active' : ''}`}
+              onClick={() => setActiveTab('clients')}
+            >
+              <span className="icon">🗂️</span>
+              <span className="label">Base de Clientes</span>
+              <span className="badge">{visibleClients.length}</span>
+            </button>
+          )}
+
           <button
             className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
             onClick={() => setActiveTab('chat')}
@@ -148,6 +176,7 @@ export default function Dashboard({ user, onLogout }) {
               {activeTab === 'tasks' && '📋 Tareas'}
               {activeTab === 'collaborators' && '👥 Colaboradores'}
               {activeTab === 'reports' && '📊 Reportes'}
+              {activeTab === 'clients' && '🗂️ Base de Clientes'}
               {activeTab === 'chat' && '💬 Chat'}
               {activeTab === 'calendar' && '📅 Calendario'}
               {activeTab === 'settings' && '⚙️ Configuración'}
@@ -181,6 +210,14 @@ export default function Dashboard({ user, onLogout }) {
 
               {activeTab === 'collaborators' && (
                 <CollaboratorsList collaborators={collaborators} onRefresh={refreshData} isAdmin={isAdmin} />
+              )}
+
+              {activeTab === 'clients' && canSeeClients && (
+                <ClientsList
+                  clients={visibleClients}
+                  onRefresh={refreshData}
+                  currentCollaboratorId={currentCollaborator?.id}
+                />
               )}
 
               {activeTab === 'reports' && isAdmin && (
