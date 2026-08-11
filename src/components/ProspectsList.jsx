@@ -24,6 +24,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [detailProspect, setDetailProspect] = useState(null)
   const [emailCredits, setEmailCredits] = useState(null)
   const [emailCreditsUpdatedAt, setEmailCreditsUpdatedAt] = useState(null)
+  const [searchCredits, setSearchCredits] = useState(null)
   const [editProspect, setEditProspect] = useState(null)
   const [editForm, setEditForm] = useState(null)
   const [editError, setEditError] = useState('')
@@ -48,6 +49,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
   useEffect(() => {
     loadEmailCredits()
+    loadSearchCredits()
   }, [])
 
   const loadEmailCredits = async () => {
@@ -61,6 +63,18 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
     if (data) {
       setEmailCredits(data.remaining)
       setEmailCreditsUpdatedAt(data.updated_at)
+    }
+  }
+
+  const loadSearchCredits = async () => {
+    try {
+      const res = await fetch('/api/search-credits')
+      const data = await res.json()
+      if (res.ok && data.limit !== null) {
+        setSearchCredits({ used: data.used, limit: data.limit })
+      }
+    } catch {
+      // credit badge is informational only; ignore failures silently
     }
   }
 
@@ -188,6 +202,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
           results: data.results || [],
         },
       }))
+      loadSearchCredits()
     } catch (err) {
       setMessage('Error al buscar en internet: ' + err.message)
       setTimeout(() => setMessage(''), 4000)
@@ -339,6 +354,14 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
               {emailCreditsUpdatedAt && (
                 <span className="credits-updated"> · actualizado {new Date(emailCreditsUpdatedAt).toLocaleString('es-CL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
               )}
+            </div>
+          )}
+          {searchCredits !== null && (
+            <div
+              className={`email-credits-badge ${searchCredits.limit - searchCredits.used <= 50 ? 'credits-low' : ''}`}
+              title="Búsquedas automáticas en internet (Tavily) usadas este mes"
+            >
+              🌐 {searchCredits.limit - searchCredits.used} búsquedas restantes este mes
             </div>
           )}
           <button className="report-toggle-btn" onClick={() => setShowReport(true)}>📊 Ver Reporte</button>
