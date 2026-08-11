@@ -20,6 +20,7 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
   const [checkingEmailId, setCheckingEmailId] = useState(null)
   const [searchingOnlineId, setSearchingOnlineId] = useState(null)
   const [onlineResults, setOnlineResults] = useState({})
+  const [expandedOnlineId, setExpandedOnlineId] = useState(null)
   const [detailProspect, setDetailProspect] = useState(null)
   const [emailCredits, setEmailCredits] = useState(null)
   const [emailCreditsUpdatedAt, setEmailCreditsUpdatedAt] = useState(null)
@@ -178,7 +179,14 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
       setOnlineResults((prev) => ({
         ...prev,
-        [prospect.id]: { email: data.email || null, searchUrl: data.searchUrl },
+        [prospect.id]: {
+          email: data.email || null,
+          phone: data.phone || null,
+          website: data.website || null,
+          searchUrl: data.searchUrl,
+          resultsChecked: data.resultsChecked || 0,
+          results: data.results || [],
+        },
       }))
     } catch (err) {
       setMessage('Error al buscar en internet: ' + err.message)
@@ -418,24 +426,66 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                             {searchingOnlineId === p.id ? 'Buscando...' : '🔍 Buscar en Internet'}
                           </button>
                           {onlineResults[p.id] && (
-                            onlineResults[p.id].email ? (
-                              <div className="online-result-found">
-                                <span className="online-found-email">{onlineResults[p.id].email}</span>
-                                <button
-                                  className="apply-online-email-btn"
-                                  onClick={() => applyOnlineEmail(p, onlineResults[p.id].email)}
-                                >
-                                  ✓ Usar este correo
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="online-result-empty">
-                                Sin coincidencias claras.{' '}
-                                <a href={onlineResults[p.id].searchUrl} target="_blank" rel="noopener noreferrer">
-                                  Buscar manualmente
-                                </a>
-                              </div>
-                            )
+                            <div className="online-summary">
+                              {onlineResults[p.id].email ? (
+                                <div className="online-result-found">
+                                  <span className="online-found-email">{onlineResults[p.id].email}</span>
+                                  <button
+                                    className="apply-online-email-btn"
+                                    onClick={() => applyOnlineEmail(p, onlineResults[p.id].email)}
+                                  >
+                                    ✓ Usar este correo
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="online-result-empty">
+                                  Sin correo con coincidencia clara.{' '}
+                                  <a href={onlineResults[p.id].searchUrl} target="_blank" rel="noopener noreferrer">
+                                    Buscar manualmente
+                                  </a>
+                                </div>
+                              )}
+
+                              {onlineResults[p.id].phone && (
+                                <div className="online-extra-info">
+                                  📞 <span>{onlineResults[p.id].phone}</span>
+                                </div>
+                              )}
+
+                              {onlineResults[p.id].website && (
+                                <div className="online-extra-info">
+                                  🌐{' '}
+                                  <a href={onlineResults[p.id].website} target="_blank" rel="noopener noreferrer">
+                                    {onlineResults[p.id].website}
+                                  </a>
+                                </div>
+                              )}
+
+                              <button
+                                className="toggle-online-details-btn"
+                                onClick={() => setExpandedOnlineId(expandedOnlineId === p.id ? null : p.id)}
+                              >
+                                {expandedOnlineId === p.id
+                                  ? '▲ Ocultar resumen completo'
+                                  : `▼ Ver resumen completo (${onlineResults[p.id].resultsChecked} resultados)`}
+                              </button>
+
+                              {expandedOnlineId === p.id && (
+                                <ul className="online-results-list">
+                                  {onlineResults[p.id].results.length === 0 && (
+                                    <li className="online-result-item-empty">Sin resultados.</li>
+                                  )}
+                                  {onlineResults[p.id].results.map((item, idx) => (
+                                    <li key={idx} className="online-result-item">
+                                      <a href={item.link} target="_blank" rel="noopener noreferrer">
+                                        {item.title || item.link}
+                                      </a>
+                                      {item.snippet && <p>{item.snippet}</p>}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
                           )}
                         </div>
                       )}
