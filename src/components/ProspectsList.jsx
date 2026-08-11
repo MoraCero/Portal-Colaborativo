@@ -463,28 +463,10 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
 
                               <button
                                 className="toggle-online-details-btn"
-                                onClick={() => setExpandedOnlineId(expandedOnlineId === p.id ? null : p.id)}
+                                onClick={() => setExpandedOnlineId(p.id)}
                               >
-                                {expandedOnlineId === p.id
-                                  ? '▲ Ocultar resumen completo'
-                                  : `▼ Ver resumen completo (${onlineResults[p.id].resultsChecked} resultados)`}
+                                {`▤ Ver resumen completo (${onlineResults[p.id].resultsChecked} resultados)`}
                               </button>
-
-                              {expandedOnlineId === p.id && (
-                                <ul className="online-results-list">
-                                  {onlineResults[p.id].results.length === 0 && (
-                                    <li className="online-result-item-empty">Sin resultados.</li>
-                                  )}
-                                  {onlineResults[p.id].results.map((item, idx) => (
-                                    <li key={idx} className="online-result-item">
-                                      <a href={item.link} target="_blank" rel="noopener noreferrer">
-                                        {item.title || item.link}
-                                      </a>
-                                      {item.snippet && <p>{item.snippet}</p>}
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
                             </div>
                           )}
                         </div>
@@ -703,6 +685,86 @@ export default function ProspectsList({ currentCollaboratorId, onClientConverted
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {expandedOnlineId && onlineResults[expandedOnlineId] && (
+        <div
+          className="debt-modal-overlay"
+          onMouseDown={handleOverlayMouseDown}
+          onMouseUp={(e) => handleOverlayMouseUp(e, () => setExpandedOnlineId(null))}
+        >
+          <div className="debt-modal online-summary-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="debt-modal-header">
+              <h3>
+                {(prospects.find((pr) => pr.id === expandedOnlineId) || {}).business_name || 'Resumen de búsqueda'}
+              </h3>
+              <button onClick={() => setExpandedOnlineId(null)}>×</button>
+            </div>
+            <p className="debt-modal-subtitle">
+              {onlineResults[expandedOnlineId].resultsChecked} resultados encontrados en internet
+            </p>
+
+            <div className="online-summary-highlights">
+              <div className="online-summary-field">
+                <span className="online-summary-label">Correo</span>
+                {onlineResults[expandedOnlineId].email ? (
+                  <div className="online-summary-value-row">
+                    <span>{onlineResults[expandedOnlineId].email}</span>
+                    <button
+                      className="apply-online-email-btn"
+                      onClick={() => {
+                        const prospect = prospects.find((pr) => pr.id === expandedOnlineId)
+                        if (prospect) applyOnlineEmail(prospect, onlineResults[expandedOnlineId].email)
+                        setExpandedOnlineId(null)
+                      }}
+                    >
+                      ✓ Usar este correo
+                    </button>
+                  </div>
+                ) : (
+                  <span className="online-summary-empty">Sin coincidencia clara</span>
+                )}
+              </div>
+
+              <div className="online-summary-field">
+                <span className="online-summary-label">Teléfono</span>
+                {onlineResults[expandedOnlineId].phone ? (
+                  <span>{onlineResults[expandedOnlineId].phone}</span>
+                ) : (
+                  <span className="online-summary-empty">No encontrado</span>
+                )}
+              </div>
+
+              <div className="online-summary-field">
+                <span className="online-summary-label">Sitio web</span>
+                {onlineResults[expandedOnlineId].website ? (
+                  <a href={onlineResults[expandedOnlineId].website} target="_blank" rel="noopener noreferrer">
+                    {onlineResults[expandedOnlineId].website}
+                  </a>
+                ) : (
+                  <span className="online-summary-empty">No encontrado</span>
+                )}
+              </div>
+            </div>
+
+            <div className="online-summary-divider" />
+
+            <div className="online-modal-results-wrap">
+              {onlineResults[expandedOnlineId].results.length === 0 && (
+                <p className="online-result-item-empty">Sin resultados.</p>
+              )}
+              {onlineResults[expandedOnlineId].results.map((item, idx) => (
+                <div key={idx} className="online-result-card">
+                  <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    {item.title || item.link}
+                  </a>
+                  {item.snippet && <p>{item.snippet}</p>}
+                  <span className="online-result-link">{item.link}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
