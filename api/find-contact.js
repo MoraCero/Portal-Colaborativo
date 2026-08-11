@@ -92,7 +92,7 @@ function extractBestWebsite(items, businessName) {
 export default async function handler(req, res) {
   const businessName = (req.query.businessName || '').trim()
   const comuna = (req.query.comuna || '').trim()
-  const { SERPER_API_KEY } = process.env
+  const { TAVILY_API_KEY } = process.env
 
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`"${businessName}" correo contacto`)}`
 
@@ -101,30 +101,34 @@ export default async function handler(req, res) {
     return
   }
 
-  if (!SERPER_API_KEY) {
-    res.status(500).json({ error: 'Serper no está configurado en el servidor', searchUrl })
+  if (!TAVILY_API_KEY) {
+    res.status(500).json({ error: 'Tavily no está configurado en el servidor', searchUrl })
     return
   }
 
   const searchQuery = `"${businessName}" correo contacto ${comuna}`.trim()
 
   try {
-    const response = await fetch('https://google.serper.dev/search', {
+    const response = await fetch('https://api.tavily.com/search', {
       method: 'POST',
       headers: {
-        'X-API-KEY': SERPER_API_KEY,
+        Authorization: `Bearer ${TAVILY_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ q: searchQuery, num: 10, gl: 'cl', hl: 'es' }),
+      body: JSON.stringify({ query: searchQuery, max_results: 10, search_depth: 'basic' }),
     })
     const data = await response.json()
 
     if (!response.ok) {
-      res.status(502).json({ error: data.message || 'Error al consultar Serper', searchUrl })
+      res.status(502).json({ error: data.detail?.error || data.error || 'Error al consultar Tavily', searchUrl })
       return
     }
 
-    const items = data.organic || []
+    const items = (data.results || []).map((item) => ({
+      title: item.title || null,
+      snippet: item.content || null,
+      link: item.url || null,
+    }))
     const combinedText = items.map((item) => `${item.title || ''} ${item.snippet || ''}`).join(' ')
     const email = extractBestEmail(combinedText, businessName)
     const phone = extractBestPhone(combinedText)
@@ -140,13 +144,9 @@ export default async function handler(req, res) {
       source: sourceItem?.link || null,
       searchUrl,
       resultsChecked: items.length,
-      results: items.map((item) => ({
-        title: item.title || null,
-        snippet: item.snippet || null,
-        link: item.link || null,
-      })),
+      results: items,
     })
   } catch (err) {
-    res.status(500).json({ error: 'No se pudo consultar Serper: ' + err.message, searchUrl })
+    res.status(500).json({ error: 'No se pudo consultar Tavily: ' + err.message, searchUrl })
   }
 }
