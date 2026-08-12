@@ -71,10 +71,10 @@
 
 .document-form textarea {
   resize: vertical;
-  min-height: 140px;
-  font-family: 'Monaco', 'Courier', monospace;
-  font-size: 0.85rem;
-  line-height: 1.5;
+  min-height: 240px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .document-form input:focus,
@@ -84,6 +84,75 @@
   border-color: #6D28D9;
   background: white;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.content-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.content-editor-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.content-tab {
+  padding: 0.4rem 0.9rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.content-tab.active {
+  background: white;
+  color: #6D28D9;
+  border-color: #6D28D9;
+}
+
+.document-preview-live {
+  min-height: 240px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 1rem 1.1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+}
+
+.document-preview-empty {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.doc-section-label {
+  font-weight: 700;
+  color: #6D28D9;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 0.9rem;
+}
+
+.doc-section-label:first-child {
+  margin-top: 0;
+}
+
+.doc-line {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #1f2937;
+}
+
+.doc-line-break {
+  height: 0.6rem;
 }
 
 .form-error {
@@ -178,16 +247,24 @@
 
 .document-preview {
   color: #6b7280;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  max-height: 120px;
+  font-size: 0.82rem;
+  max-height: 140px;
   overflow-y: auto;
   background: #f9fafb;
-  padding: 0.75rem;
+  padding: 0.75rem 0.85rem;
   border-radius: 6px;
   margin: 0.5rem 0;
   flex: 1;
+}
+
+.document-preview .doc-section-label {
+  font-size: 0.7rem;
+}
+
+.document-preview .doc-line {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #4b5563;
 }
 
 .file-link {

@@ -5,6 +5,27 @@ import './DocumentsList.css'
 const emptyForm = { title: '', category: 'Primer Correo', content: '', file_url: '' }
 const CATEGORIES = ['Primer Correo', 'Segundo Correo', 'Seguimiento', 'Documento', 'Otro']
 
+function isSectionLabel(line) {
+  const trimmed = line.trim()
+  return (
+    trimmed.length > 0 &&
+    trimmed.length <= 40 &&
+    /[A-ZÁÉÍÓÚÑ]/.test(trimmed) &&
+    trimmed === trimmed.toUpperCase() &&
+    !/^https?:\/\//i.test(trimmed)
+  )
+}
+
+function renderFormattedContent(content) {
+  if (!content) return null
+  return content.split('\n').map((line, i) => {
+    const trimmed = line.trim()
+    if (trimmed === '') return <div key={i} className="doc-line-break" />
+    if (isSectionLabel(line)) return <div key={i} className="doc-section-label">{trimmed}</div>
+    return <div key={i} className="doc-line">{line}</div>
+  })
+}
+
 export default function DocumentsList({ documents, onRefresh, currentCollaboratorId }) {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
@@ -12,11 +33,13 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
   const [error, setError] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [copiedId, setCopiedId] = useState(null)
+  const [previewMode, setPreviewMode] = useState(false)
 
   const openAddForm = () => {
     setEditingId(null)
     setFormData(emptyForm)
     setError('')
+    setPreviewMode(false)
     setShowForm(true)
   }
 
@@ -29,6 +52,7 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
       file_url: doc.file_url || '',
     })
     setError('')
+    setPreviewMode(false)
     setShowForm(true)
   }
 
@@ -37,6 +61,7 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
     setEditingId(null)
     setFormData(emptyForm)
     setError('')
+    setPreviewMode(false)
   }
 
   const handleSubmit = async (e) => {
@@ -108,12 +133,40 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          <textarea
-            placeholder="Contenido del formato / plantilla de correo..."
-            value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            rows="8"
-          />
+          <div className="content-editor">
+            <div className="content-editor-tabs">
+              <button
+                type="button"
+                className={`content-tab ${!previewMode ? 'active' : ''}`}
+                onClick={() => setPreviewMode(false)}
+              >
+                ✏️ Editar
+              </button>
+              <button
+                type="button"
+                className={`content-tab ${previewMode ? 'active' : ''}`}
+                onClick={() => setPreviewMode(true)}
+              >
+                👁️ Vista previa
+              </button>
+            </div>
+            {previewMode ? (
+              <div className="document-preview-live">
+                {formData.content ? (
+                  renderFormattedContent(formData.content)
+                ) : (
+                  <span className="document-preview-empty">Nada que previsualizar todavía.</span>
+                )}
+              </div>
+            ) : (
+              <textarea
+                placeholder="Contenido del formato / plantilla de correo... (usa líneas en MAYÚSCULAS como encabezados, ej: ASUNTO SUGERIDO)"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                rows="10"
+              />
+            )}
+          </div>
           <input
             type="text"
             placeholder="Link a documento externo (opcional)"
@@ -136,7 +189,9 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
               <button onClick={() => handleDelete(doc.id)} className="delete-btn">×</button>
             </div>
             <h3>{doc.title}</h3>
-            {doc.content && <p className="document-preview">{doc.content}</p>}
+            {doc.content && (
+              <div className="document-preview">{renderFormattedContent(doc.content)}</div>
+            )}
             {doc.file_url && (
               <a href={doc.file_url} target="_blank" rel="noreferrer" className="file-link">
                 🔗 Ver documento adjunto
