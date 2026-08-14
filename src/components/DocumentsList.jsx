@@ -4,6 +4,22 @@ import './DocumentsList.css'
 
 const emptyForm = { title: '', category: 'Primer Correo', content: '', file_url: '' }
 const CATEGORIES = ['Primer Correo', 'Segundo Correo', 'Seguimiento', 'Documento', 'Otro']
+const CATEGORY_ICONS = {
+  'Primer Correo': '✉️',
+  'Segundo Correo': '📧',
+  Seguimiento: '🔁',
+  Documento: '📄',
+  Otro: '🗂️',
+}
+
+function fileNameFromUrl(url) {
+  try {
+    const clean = decodeURIComponent(url.split('/').pop() || '')
+    return clean.replace(/^\d+-/, '')
+  } catch {
+    return url
+  }
+}
 
 function isSectionLabel(line) {
   const trimmed = line.trim()
@@ -230,18 +246,21 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
 
       <div className="documents-grid">
         {filteredDocs.map((doc) => (
-          <div key={doc.id} className="document-card">
+          <div key={doc.id} className={`document-card category-${(doc.category || 'Otro').replace(/\s+/g, '-')}`}>
             <div className="card-header">
+              <span className="category-icon">{CATEGORY_ICONS[doc.category] || '🗂️'}</span>
               <span className="category-badge">{doc.category}</span>
-              <button onClick={() => handleDelete(doc.id)} className="delete-btn">×</button>
+              <button onClick={() => handleDelete(doc.id)} className="delete-btn" title="Eliminar">×</button>
             </div>
             <h3>{doc.title}</h3>
             {doc.content && (
               <div className="document-preview">{renderFormattedContent(doc.content)}</div>
             )}
             {doc.file_url && (
-              <a href={doc.file_url} target="_blank" rel="noreferrer" className="file-link">
-                🔗 Ver documento adjunto
+              <a href={doc.file_url} target="_blank" rel="noreferrer" className="file-chip">
+                <span className="file-chip-icon">📎</span>
+                <span className="file-chip-name">{fileNameFromUrl(doc.file_url)}</span>
+                <span className="file-chip-arrow">↗</span>
               </a>
             )}
             <div className="document-actions">
@@ -250,7 +269,7 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
                   {copiedId === doc.id ? '✓ Copiado' : '📋 Copiar'}
                 </button>
               )}
-              <button className="edit-btn" onClick={() => openEditForm(doc)}>Editar</button>
+              <button className="edit-btn" onClick={() => openEditForm(doc)}>✎ Editar</button>
             </div>
           </div>
         ))}

@@ -263,6 +263,7 @@
 .document-card {
   background: white;
   border: 1px solid #e5e7eb;
+  border-top: 3px solid var(--doc-accent, #6D28D9);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
@@ -275,22 +276,34 @@
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
+.document-card.category-Primer-Correo { --doc-accent: #6D28D9; }
+.document-card.category-Segundo-Correo { --doc-accent: #2563EB; }
+.document-card.category-Seguimiento { --doc-accent: #D97706; }
+.document-card.category-Documento { --doc-accent: #0D9488; }
+.document-card.category-Otro { --doc-accent: #6B7280; }
+
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.category-icon {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .category-badge {
-  background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+  background: var(--doc-accent, #6D28D9);
   color: white;
   padding: 0.3rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  margin-right: auto;
 }
 
 .delete-btn {
@@ -299,6 +312,7 @@
   color: #d1d5db;
   font-size: 1.4rem;
   cursor: pointer;
+  line-height: 1;
 }
 
 .delete-btn:hover {
@@ -306,9 +320,10 @@
 }
 
 .document-card h3 {
-  margin: 0.5rem 0;
+  margin: 0 0 0.6rem;
   color: #1f2937;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  line-height: 1.35;
 }
 
 .document-preview {
@@ -333,16 +348,41 @@
   color: #4b5563;
 }
 
-.file-link {
-  color: #6D28D9;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
   margin: 0.5rem 0;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
-.file-link:hover {
-  text-decoration: underline;
+.file-chip:hover {
+  background: white;
+  border-color: var(--doc-accent, #6D28D9);
+}
+
+.file-chip-icon {
+  font-size: 0.95rem;
+}
+
+.file-chip-name {
+  flex: 1;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-chip-arrow {
+  color: var(--doc-accent, #6D28D9);
+  font-size: 0.85rem;
 }
 
 .document-actions {
