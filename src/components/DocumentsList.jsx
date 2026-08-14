@@ -34,12 +34,15 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
   const [categoryFilter, setCategoryFilter] = useState('')
   const [copiedId, setCopiedId] = useState(null)
   const [previewMode, setPreviewMode] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadedFileName, setUploadedFileName] = useState('')
 
   const openAddForm = () => {
     setEditingId(null)
     setFormData(emptyForm)
     setError('')
     setPreviewMode(false)
+    setUploadedFileName('')
     setShowForm(true)
   }
 
@@ -53,6 +56,7 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
     })
     setError('')
     setPreviewMode(false)
+    setUploadedFileName(doc.file_url ? decodeURIComponent(doc.file_url.split('/').pop()) : '')
     setShowForm(true)
   }
 
@@ -62,6 +66,35 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
     setFormData(emptyForm)
     setError('')
     setPreviewMode(false)
+    setUploadedFileName('')
+  }
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    setUploading(true)
+    setError('')
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+      const path = `${Date.now()}-${safeName}`
+      const { error: uploadError } = await supabase.storage.from('documents').upload(path, file)
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage.from('documents').getPublicUrl(path)
+      setFormData((prev) => ({ ...prev, file_url: data.publicUrl }))
+      setUploadedFileName(file.name)
+    } catch (err) {
+      setError('Error al subir el archivo: ' + err.message)
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  const removeFile = () => {
+    setFormData((prev) => ({ ...prev, file_url: '' }))
+    setUploadedFileName('')
   }
 
   const handleSubmit = async (e) => {
@@ -167,12 +200,26 @@ export default function DocumentsList({ documents, onRefresh, currentCollaborato
               />
             )}
           </div>
-          <input
-            type="text"
-            placeholder="Link a documento externo (opcional)"
-            value={formData.file_url}
-            onChange={(e) => setFormData({ ...formData, file_url: e.target.value })}
-          />
+          <div className="file-attach-row">
+            <label className={`file-upload-btn ${uploading ? 'disabled' : ''}`}>
+              {uploading ? 'Subiendo...' : '📎 Subir archivo'}
+              <input type="file" onChange={handleFileUpload} disabled={uploading} hidden />
+            </label>
+            <span className="file-attach-or">o pega un link:</span>
+            <input
+              type="text"
+              placeholder="Link a documento externo (opcional)"
+              value={uploadedFileName ? '' : formData.file_url}
+              onChange={(e) => setFormData({ ...formData, file_url: e.target.value })}
+              disabled={!!uploadedFileName}
+            />
+          </div>
+          {uploadedFileName && (
+            <div className="file-attached-preview">
+              ✓ {uploadedFileName}
+              <button type="button" onClick={removeFile}>Quitar</button>
+            </div>
+          )}
           {error && <div className="form-error">{error}</div>}
           <div className="form-actions">
             <button type="button" className="cancel-btn" onClick={closeForm}>Cancelar</button>
