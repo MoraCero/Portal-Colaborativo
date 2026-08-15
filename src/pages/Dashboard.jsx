@@ -68,6 +68,7 @@ export default function Dashboard({ user, onLogout }) {
   const currentCollaborator = collaborators.find((c) => c.email === user?.email)
   const isAdmin = currentCollaborator ? currentCollaborator.is_admin : true
   const canSeeClients = isAdmin || currentCollaborator?.role === 'Ejecutivo Comercial - Online'
+  const canSeeProspectsAndDocs = canSeeClients || currentCollaborator?.role === 'Consultor'
 
   const visibleClients = isAdmin
     ? clients
@@ -143,7 +144,7 @@ export default function Dashboard({ user, onLogout }) {
             </button>
           )}
 
-          {canSeeClients && (
+          {canSeeProspectsAndDocs && (
             <button
               className={`nav-item ${activeTab === 'prospects' ? 'active' : ''}`}
               onClick={() => setActiveTab('prospects')}
@@ -153,7 +154,7 @@ export default function Dashboard({ user, onLogout }) {
             </button>
           )}
 
-          {canSeeClients && (
+          {canSeeProspectsAndDocs && (
             <button
               className={`nav-item ${activeTab === 'documents' ? 'active' : ''}`}
               onClick={() => setActiveTab('documents')}
@@ -256,14 +257,14 @@ export default function Dashboard({ user, onLogout }) {
                 />
               )}
 
-              {activeTab === 'prospects' && canSeeClients && (
+              {activeTab === 'prospects' && canSeeProspectsAndDocs && (
                 <ProspectsList
                   currentCollaboratorId={currentCollaborator?.id}
                   onClientConverted={loadClients}
                 />
               )}
 
-              {activeTab === 'documents' && canSeeClients && (
+              {activeTab === 'documents' && canSeeProspectsAndDocs && (
                 <DocumentsList
                   documents={documents}
                   onRefresh={refreshData}
